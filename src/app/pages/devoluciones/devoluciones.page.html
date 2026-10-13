@@ -1,0 +1,102 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="toolbar-elegante">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Devoluciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="fondo-claro ion-padding">
+  <div class="contenedor-maximo ion-margin-top">
+
+    <ion-card class="tarjeta-formulario animated fadeIn">
+      <ion-card-content>
+        <ion-item class="input-limpio" lines="none">
+          <ion-label position="stacked">Matrícula o ID Maestro</ion-label>
+          <ion-input 
+            #inputBusquedaGlobal
+            [(ngModel)]="busquedaId" 
+            (ionInput)="filtrarLista(false)" 
+            (keyup.enter)="filtrarLista(true)"
+            placeholder="Buscar deudor..."
+            inputmode="numeric">
+          </ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <div *ngIf="prestamosAgrupados.length === 0 && !cargando" class="ion-text-center ion-padding animated fadeIn">
+      <ion-icon name="checkmark-done-circle-outline" size="large" color="success" style="font-size: 80px; opacity: 0.5;"></ion-icon>
+      <p style="color: #64748b; font-weight: 600;">No hay herramientas pendientes</p>
+    </div>
+
+    <h2 class="subtitulo-gestion" *ngIf="prestamosAgrupados.length > 0">Préstamos Activos</h2>
+
+    <ion-list class="lista-transparente">
+      <ion-item *ngFor="let grupo of prestamosAgrupados" class="item-gestion ion-margin-bottom" lines="none">
+        <ion-label>
+          <h3 class="nombre-maestro">{{ grupo.receptor_nombre }}</h3>
+          
+          <div class="info-secundaria">
+            <ion-badge class="badge-id">ID: {{ grupo.receptor_id }}</ion-badge>
+            <span class="tipo-badge">{{ grupo.receptor_tipo | uppercase }}</span>
+          </div>
+
+          <div class="seccion-validacion-devolucion">
+            <ion-item class="input-limpio mini" lines="none">
+              <ion-icon name="barcode-outline" slot="start" color="primary"></ion-icon>
+              
+              <ion-input 
+                #inputEscaneoHerramienta
+                [(ngModel)]="grupo.inputValidacion" 
+                (ionInput)="validarHerramientaEnGrupo(grupo)" 
+                (keyup.enter)="validarHerramientaEnGrupo(grupo)"
+                placeholder="Escanee o escriba código (Ej: PAL-01)">
+              </ion-input>
+            </ion-item>
+
+            <div class="lista-check-herramientas">
+              <div *ngFor="let h of grupo.datos_devolucion" 
+                   class="check-item-devolucion" 
+                   [class.validado]="h.validado">
+                
+                <div class="info-h">
+                  <ion-icon [name]="h.validado ? 'checkmark-circle' : 'time-outline'" 
+                            [color]="h.validado ? 'success' : 'medium'"></ion-icon>
+                  <div class="textos-h">
+                    <span class="nombre-h">{{ h.nombre }}</span>
+                    <span class="codigo-h">({{ h.codigo }})</span>
+                  </div>
+                </div>
+                
+                <ion-button *ngIf="h.validado" 
+                            fill="clear" 
+                            size="small" 
+                            color="success" 
+                            (click)="devolverUna(grupo, h)"
+                            class="animated zoomIn">
+                  <ion-icon name="arrow-undo-outline" slot="start"></ion-icon>
+                  Entregar
+                </ion-button>
+              </div>
+            </div>
+
+            <!-- 👇 EL BOTÓN MASIVO ESTÁ AQUÍ ADENTRO PARA CONTROLAR SU POSICIÓN POR CSS 👇 -->
+            <ion-button 
+                class="boton-recibir-grupo" 
+                color="success"
+                (click)="recibirSeleccion(grupo)"
+                [disabled]="!grupo.alMenosUnaValidada">
+              <ion-icon name="checkmark-done-circle-outline" slot="start"></ion-icon>
+              Entregar ({{ obtenerConteoValidados(grupo) }})
+            </ion-button>
+
+          </div>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <div style="height: 50px;"></div>
+  </div>
+</ion-content>

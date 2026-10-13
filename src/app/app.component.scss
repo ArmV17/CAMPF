@@ -1,0 +1,236 @@
+/* ==========================================
+   VARIABLES GLOBALES CAMPS 2026
+   ========================================== */
+:host {
+  --primary-accent: #2563eb; 
+  --primary-glow: rgba(37, 99, 235, 0.25);
+  --bg-app: #f4f6f9; 
+  --text-main: #0f172a; 
+  --text-muted: #64748b; 
+  
+  --spring-physics: cubic-bezier(0.175, 0.885, 0.32, 1.15); 
+}
+
+/* 👇 INTEGRACIÓN DE NAVBAR Y MENÚ 👇 */
+ion-split-pane {
+  --border: none !important; 
+}
+
+ion-menu {
+  --border: none !important;
+  border-right: none !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.03);
+}
+
+/* ==========================================
+   EFECTOS FLOTANTES EXCLUSIVOS PARA MÓVIL
+   ========================================== */
+/* Oscurece la vista de fondo cuando el menú está abierto en celular */
+ion-menu::part(backdrop) {
+  background-color: rgba(15, 23, 42, 0.5); 
+  backdrop-filter: blur(4px);
+}
+
+/* Redondea los bordes del menú solo cuando flota en celular */
+@media (max-width: 992px) {
+  ion-menu::part(container) {
+    border-radius: 0 24px 24px 0;
+    box-shadow: 10px 0 40px rgba(0,0,0,0.15);
+  }
+}
+
+/* ==========================================
+   CABECERAS (DEEP FROSTED GLASS)
+   ========================================== */
+.toolbar-elegante {
+  --background: rgba(15, 23, 42, 0.95); 
+  --color: #ffffff;
+  --border-width: 0 !important; 
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
+}
+
+.fondo-claro {
+  --background: var(--bg-app);
+}
+
+/* ==========================================
+   ÁREA DEL PERFIL (LUZ INTERIOR)
+   ========================================== */
+.user-profile-section {
+  padding: 40px 20px 30px;
+  background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.08) 0%, transparent 60%), transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+
+  .user-name {
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-main);
+    text-transform: capitalize;
+    letter-spacing: -0.5px; 
+  }
+  
+  ion-badge {
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    letter-spacing: 0.5px;
+    border-radius: 10px; 
+    font-weight: 600;
+    background: var(--primary-accent);
+    box-shadow: 0 4px 12px var(--primary-glow); 
+  }
+}
+
+/* ==========================================
+   MENÚ INTERACTIVO (EFECTO CÁPSULA 2.0)
+   ========================================== */
+.lista-menu {
+  background: transparent;
+  padding: 0 16px; 
+  padding-bottom: 80px !important; 
+}
+
+.item-menu {
+  --background: transparent;
+  --color: var(--text-muted);
+  --min-height: 54px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  border-radius: 16px; 
+  border: 1px solid transparent; 
+  cursor: pointer;
+  transition: all 0.4s var(--spring-physics);
+
+  ion-icon {
+    color: #94a3b8;
+    font-size: 1.4rem;
+    transition: all 0.4s var(--spring-physics);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      --background: rgba(37, 99, 235, 0.04);
+      transform: translateX(6px) scale(1.01); 
+      
+      ion-icon { 
+        color: var(--primary-accent); 
+      }
+    }
+  }
+
+  &:active {
+    transform: scale(0.97); 
+    --background: rgba(37, 99, 235, 0.08);
+  }
+
+  &.seleccionado {
+    --background: rgba(37, 99, 235, 0.08);
+    --color: var(--primary-accent);
+    font-weight: 700;
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    box-shadow: 0 8px 24px -6px var(--primary-glow);
+    
+    ion-icon { 
+      color: var(--primary-accent);
+      transform: scale(1.2); 
+    }
+  }
+}
+
+/* ==========================================
+   DIVISOR Y ZONA DE PELIGRO (LOGOUT)
+   ========================================== */
+.menu-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent); 
+  margin: 28px 20px;
+}
+
+.logout-btn {
+  margin-top: 10px;
+  margin-inline: 16px; 
+  --background: rgba(239, 68, 68, 0.06); 
+  --color: #ef4444; 
+  border-radius: 16px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all 0.4s var(--spring-physics);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      --background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 16px -4px rgba(239, 68, 68, 0.2);
+    }
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/* --- POSICIONAMIENTO FIJO AL FONDO DEL MENU --- */
+.copyright-section {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  background: #f4f6f9; 
+  z-index: 10;
+
+  p {
+    margin: 2px 0 0 0;
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 500;
+    
+    &:first-child {
+      font-weight: 700;
+      color: #475569;
+    }
+  }
+}
+
+/* ==========================================
+   📱 ADAPTACIÓN PARA MÓVILES (RESPONSIVE)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  .user-profile-section {
+    padding: 20px 16px 20px;
+    margin-bottom: 10px;
+  }
+
+  .user-profile-section .user-name {
+    font-size: 1.15rem; 
+  }
+
+  .item-menu {
+    --min-height: 48px;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+  }
+
+  .menu-divider {
+    margin: 15px 20px; 
+  }
+  
+  @media (max-height: 600px) {
+    .copyright-section {
+      position: relative; 
+      margin-top: 20px;
+    }
+    .lista-menu {
+      padding-bottom: 20px !important;
+    }
+  }
+}

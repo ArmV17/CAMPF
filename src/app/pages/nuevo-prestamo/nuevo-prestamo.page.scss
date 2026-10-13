@@ -1,0 +1,407 @@
+/* ==========================================================================
+   VARIABLES GLOBALES CAMPS 2026 (NUEVO PRÉSTAMO)
+   ========================================================================== */
+:host {
+  --primary-accent: #2563eb; 
+  --primary-glow: rgba(37, 99, 235, 0.25);
+  --success-accent: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.25);
+  --bg-app: #f4f6f9; 
+  --surface-card: #ffffff;
+  --text-main: #0f172a; 
+  --text-muted: #64748b; 
+  --text-light: #94a3b8;
+  --spring-physics: cubic-bezier(0.175, 0.885, 0.32, 1.15); 
+}
+
+/* ==========================================================================
+   1. CABECERA (DEEP FROSTED GLASS) Y CONTENEDOR
+   ========================================================================== */
+.toolbar-elegante {
+  --background: rgba(15, 23, 42, 0.95);
+  --color: #ffffff;
+  --border-width: 0 !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  ion-title {
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.3px;
+  }
+
+  ion-back-button, ion-menu-button {
+    --color: #ffffff;
+  }
+}
+
+.fondo-claro {
+  --background: var(--bg-app);
+}
+
+.contenedor-maximo {
+  max-width: 750px; 
+  margin: 0 auto;
+  padding-top: 24px;
+  padding-bottom: 40px;
+}
+
+/* ==========================================================================
+   2. TARJETAS FLOTANTES Y SELECTOR (SEGMENT)
+   ========================================================================== */
+.tarjeta-formulario {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
+  border-radius: 20px;
+  background: var(--surface-card);
+  margin-bottom: 24px;
+  border: 1px solid rgba(0,0,0,0.02);
+  overflow: hidden;
+  transition: transform 0.4s var(--spring-physics);
+
+  ion-segment {
+    --background: #f1f5f9;
+    padding: 6px;
+    border-radius: 16px;
+    margin-bottom: 15px;
+
+    ion-segment-button {
+      --indicator-color: #ffffff;
+      --color: var(--text-muted);
+      --color-checked: var(--text-main);
+      font-weight: 700;
+      text-transform: none;
+      min-height: 44px;
+      letter-spacing: 0.2px;
+      border-radius: 12px;
+    }
+  }
+
+  .titulo-seccion {
+    font-size: 1.15rem;
+    color: var(--text-main);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -0.2px;
+
+    ion-icon {
+      color: var(--primary-accent);
+      font-size: 1.4rem;
+    }
+  }
+}
+
+.input-limpio {
+  --background: #f8fafc;
+  --border-radius: 14px;
+  --padding-start: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s var(--spring-physics);
+
+  &:focus-within {
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    transform: translateY(-2px);
+  }
+
+  ion-input, ion-select {
+    font-size: 1.05rem;
+    --color: var(--text-main);
+    --placeholder-color: var(--text-light);
+    font-weight: 500;
+  }
+}
+
+/* ==========================================================================
+   3. BANNERS DINÁMICOS DE IDENTIFICACIÓN
+   ========================================================================== */
+.banner-alumno {
+  background: rgba(16, 185, 129, 0.08); 
+  border-left: 4px solid var(--success-accent);
+  padding: 16px;
+  border-radius: 14px;
+  margin: 16px 0;
+
+  p {
+    margin: 4px 0;
+    color: #065f46;
+    font-size: 0.95rem;
+    strong { color: #064e3b; font-weight: 800; }
+  }
+}
+
+.banner-docente {
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-left-color: var(--primary-accent) !important;
+  border-radius: 14px;
+  
+  .flex-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    
+    .badge-id-prestamo {
+      --background: #ffffff;
+      --color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+  }
+
+  .detalles-compactos {
+    p {
+      margin: 0 !important; 
+      line-height: 1.4;
+      font-size: 0.95rem;
+    }
+    .txt-secundario { color: var(--text-muted); font-weight: 500; }
+    .txt-depto { 
+      color: var(--primary-accent); 
+      font-weight: 800; 
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+/* ==========================================================================
+   4. SECCIÓN DEL ESCÁNER Y BÚSQUEDA
+   ========================================================================== */
+.contenedor-escanner-minimal {
+  --background: #f8fafc;
+  --border-radius: 14px;
+  --padding-start: 16px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 12px;
+  transition: all 0.3s var(--spring-physics);
+
+  &:focus-within {
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+  }
+
+  .input-texto-codigo {
+    font-size: 1.15rem; 
+    font-weight: 600;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    color: var(--text-main);
+  }
+
+  .boton-anadir-clean {
+    height: 36px; 
+    margin-top: 10px;
+    margin-right: 6px;
+    
+    --border-width: 1.5px;
+    --border-radius: 10px;
+    --color: var(--success-accent);
+    --border-color: rgba(16, 185, 129, 0.4);
+    --background: transparent;
+    
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: none; 
+    transition: all 0.2s ease;
+
+    ion-icon {
+      font-size: 1.2rem;
+      margin-right: 4px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        --background: rgba(16, 185, 129, 0.08);
+        --border-color: var(--success-accent);
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+.info-herramienta-preview {
+  padding: 4px 20px;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   5. LISTA DE PRÉSTAMO (CARRITO FLOTANTE)
+   ========================================================================== */
+.tarjeta-lista-prestamo {
+  margin-top: 30px;
+
+  .titulo-seccion-lista {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 20px 0 14px 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    span {
+      background: var(--primary-accent);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+  }
+}
+
+.item-carrito-estilizado {
+  --background: var(--surface-card);
+  --border-radius: 14px;
+  --padding-start: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateX(4px);
+      border-color: rgba(37, 99, 235, 0.2);
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .icono-lista {
+    color: var(--primary-accent);
+    font-size: 1.3rem;
+  }
+
+  h3 {
+    font-weight: 800;
+    color: var(--text-main);
+    font-size: 1rem;
+    letter-spacing: -0.2px;
+  }
+
+  p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .boton-borrar {
+    --color: var(--text-light);
+    transition: 0.2s;
+    
+    @media (hover: hover) and (pointer: fine) {
+      &:hover { 
+        --color: #ef4444; 
+        transform: scale(1.1);
+      }
+    }
+
+    &:active {
+      --color: #ef4444; 
+      transform: scale(0.9);
+    }
+  }
+}
+
+/* ==========================================================================
+   6. BOTONES DE ACCIÓN (GLOWING) Y ANIMACIONES
+   ========================================================================== */
+.boton-guardar {
+  --background: var(--success-accent);
+  --background-hover: #059669; 
+  --background-activated: #047857;
+  --border-radius: 16px;
+  --box-shadow: 0 8px 24px -6px var(--success-glow);
+  height: 60px; 
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.2px;
+  margin-top: 36px;
+  transition: all 0.4s var(--spring-physics);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      --box-shadow: 0 12px 30px -6px var(--success-glow);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+    --box-shadow: none;
+    transform: none;
+  }
+}
+
+/* Animaciones Fluidas */
+.animated {
+  animation-duration: 0.6s;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fadeIn { animation-name: fadeIn; animation-timing-function: var(--spring-physics); }
+.fadeInUp { animation-name: fadeInUp; animation-timing-function: var(--spring-physics); }
+
+/* Fix popovers en PC */
+ion-popover {
+  --width: 320px;
+}
+
+/* ==========================================================================
+   📱 ADAPTACIÓN PARA MÓVILES (RESPONSIVE)
+   ========================================================================== */
+@media (max-width: 768px) {
+  
+  // ... (tus otros estilos anteriores) ...
+
+  /* Optimizar el cuadro de escaneo para que el placeholder largo se vea bien */
+  .contenedor-escanner-minimal {
+    .input-texto-codigo {
+      font-size: 0.95rem; /* Letra un poco más adaptable */
+      
+      /* Aseguramos que el placeholder luzca ordenado y con buen tamaño en móvil */
+      &::placeholder {
+        font-size: 0.85rem !important;
+        opacity: 0.7;
+      }
+    }
+    
+    .boton-anadir-clean {
+      height: 36px;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+  }
+}

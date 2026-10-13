@@ -1,0 +1,410 @@
+/* ==========================================================================
+   VARIABLES GLOBALES CAMPS 2026 (ADMINISTRACIÓN)
+   ========================================================================== */
+:host {
+  --primary-accent: #2563eb; 
+  --primary-glow: rgba(37, 99, 235, 0.25);
+  --success-accent: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.25);
+  --danger-accent: #ef4444;
+  --danger-glow: rgba(239, 68, 68, 0.25);
+  --bg-app: #f4f6f9; 
+  --surface-card: #ffffff;
+  --text-main: #0f172a; 
+  --text-muted: #64748b; 
+  --text-light: #94a3b8;
+  --spring-physics: cubic-bezier(0.175, 0.885, 0.32, 1.15); 
+}
+
+/* ==========================================================================
+   1. CABECERA GLOBAL (HEADER, TOOLBARS Y BUSCADOR)
+   ========================================================================== */
+ion-header {
+  background: rgba(15, 23, 42, 0.98) !important; /* Cristal oscuro unificado */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.toolbar-elegante, ion-toolbar {
+  --background: transparent !important; /* Elimina parches blancos de Ionic */
+  --color: #ffffff;
+  --border-width: 0 !important;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  
+  ion-title {
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.3px;
+  }
+
+  ion-back-button, ion-menu-button {
+    --color: #ffffff;
+  }
+}
+
+/* Buscador integrado en la zona oscura */
+ion-searchbar {
+  --background: rgba(255, 255, 255, 0.08) !important; 
+  --color: #ffffff !important;
+  --placeholder-color: rgba(255, 255, 255, 0.6) !important;
+  --icon-color: rgba(255, 255, 255, 0.8) !important;
+  --border-radius: 14px !important;
+  --box-shadow: none !important;
+  padding-bottom: 15px;
+  padding-top: 5px;
+}
+
+/* ==========================================================================
+   2. PESTAÑAS (SEGMENT ESTILO CÁPSULA FLOTANTE)
+   ========================================================================== */
+ion-segment {
+  background: rgba(255, 255, 255, 0.05) !important; 
+  padding: 6px;
+  border-radius: 16px;
+  margin: 0 10px 10px 10px;
+  width: calc(100% - 20px);
+
+  ion-segment-button {
+    --color: rgba(255, 255, 255, 0.5) !important; 
+    --color-checked: #ffffff !important; 
+    --indicator-color: var(--primary-accent) !important; 
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.2px;
+    min-height: 42px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  ion-segment-button.segment-button-checked {
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+}
+
+/* ==========================================================================
+   3. CONTENEDOR GENERAL Y FORMULARIOS
+   ========================================================================== */
+.fondo-claro {
+  --background: var(--bg-app);
+}
+
+.contenedor-maximo {
+  max-width: 750px;
+  margin: 0 auto;
+  padding-bottom: 50px;
+  /* El padding en PC se puede manejar de forma global, pero se ajustará en Móvil */
+}
+
+.tarjeta-formulario {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
+  border-radius: 20px;
+  background: var(--surface-card);
+  margin-bottom: 30px;
+  border: 1px solid rgba(0,0,0,0.02);
+  transition: transform 0.4s var(--spring-physics), box-shadow 0.4s ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .titulo-seccion {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.3px;
+
+    ion-icon {
+      margin-right: 12px;
+      color: var(--primary-accent);
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.input-limpio {
+  --background: #f8fafc;
+  --border-radius: 14px;
+  --padding-start: 16px;
+  margin-bottom: 16px;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: #e2e8f0;
+  transition: all 0.3s var(--spring-physics);
+
+  &:focus-within {
+    --border-color: var(--primary-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+  }
+
+  ion-input, ion-select {
+    font-size: 1.05rem;
+    font-weight: 600;
+    --color: var(--text-main);
+    --placeholder-color: var(--text-light);
+  }
+}
+
+/* ==========================================================================
+   4. LISTA DE GESTIÓN (ESTILO DASHBOARD CARD)
+   ========================================================================== */
+.subtitulo-gestion {
+  margin: 10px 10px 20px 5px;
+  font-size: 1.3rem; 
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  text-transform: none;
+}
+
+.lista-gestion {
+  background: transparent !important;
+  padding: 0;
+
+  .item-gestion {
+    --background: var(--surface-card);
+    --border-radius: 16px;
+    --padding-start: 16px;
+    --padding-end: 10px;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.02);
+    transition: all 0.4s var(--spring-physics);
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        transform: scale(1.01) translateX(2px);
+        box-shadow: 0 8px 24px -6px rgba(0,0,0,0.08);
+      }
+    }
+    
+    &:active {
+      transform: scale(0.98); /* Efecto táctil en móvil */
+    }
+
+    ion-label {
+      h3 {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: var(--text-main);
+        margin-bottom: 6px;
+        letter-spacing: -0.3px;
+      }
+
+      p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      strong {
+        color: var(--text-main);
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   5. CONTROLES Y BOTONES GENERALES
+   ========================================================================== */
+ion-buttons[slot="end"] {
+  ion-button {
+    --border-radius: 12px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    height: 44px;
+    margin-left: 6px;
+    transition: all 0.3s ease;
+
+    ion-icon { font-size: 1.4rem; }
+
+    &[color="primary"] { 
+      --color: var(--primary-accent); 
+      background: rgba(37, 99, 235, 0.05);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover { background: rgba(37, 99, 235, 0.1); }
+      }
+    }
+    &[color="danger"] { 
+      --color: var(--danger-accent); 
+      background: rgba(239, 68, 68, 0.05);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover { background: rgba(239, 68, 68, 0.1); }
+      }
+    }
+  }
+}
+
+.boton-guardar {
+  --background: var(--success-accent);
+  --background-hover: #059669;
+  --border-radius: 16px;
+  --box-shadow: 0 8px 24px -6px var(--success-glow);
+  height: 60px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.2px;
+  margin-top: 20px;
+  transition: all 0.4s var(--spring-physics);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      --box-shadow: 0 12px 30px -6px var(--success-glow);
+    }
+  }
+  
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+/* Botón Verde Masivo de Excel */
+ion-button[color="success"] {
+  --border-radius: 16px;
+  --box-shadow: 0 8px 24px -6px var(--success-glow);
+  font-weight: 800;
+  height: 55px;
+  letter-spacing: -0.2px;
+  margin-bottom: 25px;
+  transition: all 0.4s var(--spring-physics);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      --box-shadow: 0 12px 30px -6px var(--success-glow);
+    }
+  }
+  
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.seccion-materias {
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 16px;
+  margin-top: 8px;
+  
+  .contenedor-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+
+    ion-chip {
+      --background: rgba(37, 99, 235, 0.08);
+      --color: var(--primary-accent);
+      border: 1px solid rgba(37, 99, 235, 0.15);
+      font-weight: 700;
+      border-radius: 10px;
+    }
+  }
+}
+
+/* Solución de compatibilidad para listas vacías */
+ion-list { background: transparent !important; }
+ion-item::part(native) { background: transparent; border: none !important; }
+ion-item { --border-width: 0 !important; --inner-border-width: 0 !important; }
+
+/* ==========================================================================
+   📱 ARREGLO MÓVIL PARA REGISTROS / ALUMNOS (MATRÍCULA ARRIBA, CARRERA ABAJO)
+   ========================================================================== */
+@media (max-width: 768px) {
+  
+  /* Tarjeta general del registro de alumnos */
+  .lista-gestion .item-gestion, 
+  .tarjeta-registro, 
+  .item-gestion {
+    padding: 12px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: relative;
+
+    /* El bloque de texto principal del usuario/alumno */
+    ion-label {
+      margin: 0 !important;
+      flex: 1 !important;
+      min-width: 0 !important;
+      padding-right: 6px !important;
+
+      /* Nombre del alumno */
+      h3, .nombre-principal, h2 {
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        margin-bottom: 4px !important;
+      }
+
+      /* 🔥 CONTENEDOR DE DATOS SECUNDARIOS: MATRÍCULA Y CARRERA EN BLOQUES SEPARADOS */
+      p, .detalles-usuario, .info-secundaria {
+        font-size: 0.75rem !important;
+        color: var(--text-muted, #64748b) !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        line-height: 1.3 !important;
+        display: flex !important;
+        flex-direction: column !important; /* Fuerza a que los elementos bajen de renglón */
+        align-items: flex-start !important;
+        gap: 2px !important; /* Pequeño espacio limpio entre la matrícula y la carrera */
+
+        /* Matrícula o ID destacado en su propia línea */
+        .matricula-texto, span.matricula, span:first-child {
+          font-weight: 600;
+          color: var(--text-main, #0f172a);
+          display: block !important;
+        }
+
+        /* Carrera o datos adicionales en la línea inferior */
+        .carrera-texto, span.carrera {
+          display: block !important;
+          opacity: 0.85;
+        }
+
+        /* Ocultamos puntos separadores volando */
+        span.separador-punto, span:empty {
+          display: none !important;
+        }
+      }
+    }
+
+    /* Botones de acción compactos a la derecha */
+    .botones-accion, ion-buttons, .acciones-item {
+      display: flex !important;
+      flex-direction: row !important;
+      gap: 2px !important;
+      flex-shrink: 0 !important;
+      align-items: center !important;
+
+      ion-button {
+        width: 30px !important;
+        height: 30px !important;
+        --padding-start: 2px !important;
+        --padding-end: 2px !important;
+        margin: 0 !important;
+
+        ion-icon {
+          font-size: 1rem !important;
+        }
+      }
+    }
+  }
+}

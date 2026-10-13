@@ -1,0 +1,108 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="toolbar-elegante">
+    <ion-buttons slot="start">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Inventario</ion-title>
+    
+    <ion-buttons slot="end">
+      <ion-button (click)="generarPDFInventario()" title="Descargar Reporte PDF">
+        <ion-icon name="download-outline" slot="icon-only" color="light"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <ion-toolbar class="toolbar-elegante barra-busqueda-container">
+    <ion-searchbar 
+      placeholder="Buscar por nombre, estado o tipo..."
+      (ionInput)="buscarHerramienta($event)"
+      [debounce]="300">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="fondo-claro ion-padding">
+  <div class="contenedor-maximo">
+    
+    <div *ngIf="textoBuscar" class="resultados-busqueda-directa">
+      <div *ngFor="let herramienta of inventarioFiltrado; trackBy: trackByNombre" class="grupo-busqueda">
+        
+        <h2 class="titulo-herramienta-busqueda">{{ herramienta.nombre }}</h2>
+
+        <div *ngFor="let detalle of herramienta.detallesPorTipo" class="bloque-tipo-busqueda">
+          
+          <div class="separador-tipo" *ngIf="detalle.tipo !== 'Normal'">
+            {{ detalle.tipo }}
+          </div>
+
+          <div class="fila-unidad" *ngFor="let unidad of detalle.items">
+            <div class="info-izquierda">
+              <div class="contenedor-icono-herramienta">
+                <ion-icon name="construct-outline"></ion-icon>
+              </div>
+              <span class="codigo-unidad">{{ unidad.num_herramienta }}</span>
+            </div>
+            
+            <div class="info-derecha">
+              <div class="estado-contenedor">
+                <span class="punto-estado" [ngClass]="unidad.estado.toLowerCase()"></span>
+                <span class="texto-estado">{{ unidad.estado }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ion-accordion-group *ngIf="!textoBuscar" class="lista-minimalista">
+      <ion-accordion [value]="herramienta.nombre" *ngFor="let herramienta of herramientasAgrupadas" class="tarjeta-herramienta">
+        
+        <ion-item slot="header" class="header-acordeon" lines="none">
+          <div slot="start" class="contenedor-icono-principal">
+            <ion-icon name="hammer-outline"></ion-icon>
+          </div>
+          
+          <ion-label>
+            <h2 class="nombre-principal">{{ herramienta.nombre }}</h2>
+          </ion-label>
+
+          <div slot="end" class="controles-derecha">
+            <div class="indicador-stock-moderno">
+              <span class="stock-label">DISPONIBLES</span>
+              <span class="stock-numero">{{ herramienta.totalDisponibles }}</span>
+            </div>
+          </div>
+        </ion-item>
+
+        <div slot="content" class="contenedor-desplegable">
+          <div class="desglose-unidades">
+            
+            <div *ngFor="let detalle of herramienta.detallesPorTipo" class="bloque-tipo">
+              <div class="separador-tipo" *ngIf="detalle.tipo !== 'Normal'">
+                TIPO: {{ detalle.tipo }}
+              </div>
+
+              <div class="fila-unidad" *ngFor="let unidad of detalle.items">
+                <div class="info-izquierda">
+                  <div class="contenedor-icono-herramienta">
+                    <ion-icon name="construct-outline"></ion-icon>
+                  </div>
+                  <span class="codigo-unidad">{{ unidad.num_herramienta }}</span>
+                </div>
+                
+                <div class="info-derecha">
+                  <div class="estado-contenedor">
+                    <span class="punto-estado" [ngClass]="unidad.estado?.toLowerCase() || 'disponible'"></span>
+                    <span class="texto-estado">{{ unidad.estado }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+
+  </div>
+</ion-content>

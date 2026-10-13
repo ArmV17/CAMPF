@@ -1,0 +1,78 @@
+<ion-app>
+  <!-- La magia responsiva: Combina la validación de sesión con el tamaño de pantalla -->
+  <ion-split-pane contentId="main-content" [when]="sesionIniciada() ? 'lg' : false">
+    
+    <ion-menu contentId="main-content" type="overlay" *ngIf="sesionIniciada()">
+      
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="toolbar-elegante">
+          <ion-title>CAMPF</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="fondo-claro">
+        
+        <div class="user-profile-section ion-padding">
+          <div class="user-info">
+            <ion-text color="dark">
+              <h2 class="user-name">{{ obtenerNombreUsuario() }}</h2>
+            </ion-text>
+            <ion-badge [color]="esAdmin() ? 'primary' : 'medium'" mode="ios">
+              {{ esAdmin() ? 'Administrador' : 'Personal Staff' }}
+            </ion-badge>
+          </div>
+        </div>
+
+        <ion-list class="lista-menu" lines="none">
+          <!-- Este contenedor asegura que el menú se cierre automáticamente en celular al tocar un botón -->
+          <ion-menu-toggle auto-hide="false">
+            
+            <ion-item routerLink="/dashboard" routerDirection="root" class="item-menu" routerLinkActive="seleccionado">
+              <ion-icon slot="start" name="home-outline"></ion-icon>
+              <ion-label>Inicio</ion-label>
+            </ion-item>
+            
+            <ion-item routerLink="/nuevo-prestamo" routerDirection="root" class="item-menu" routerLinkActive="seleccionado">
+              <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+              <ion-label>Nuevo Préstamo</ion-label>
+            </ion-item>
+            
+            <ion-item routerLink="/devoluciones" routerDirection="root" class="item-menu" routerLinkActive="seleccionado">
+              <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+              <ion-label>Devoluciones</ion-label>
+            </ion-item>
+            
+            <ion-item routerLink="/inventario" routerDirection="root" class="item-menu" routerLinkActive="seleccionado">
+              <ion-icon slot="start" name="list-outline"></ion-icon>
+              <ion-label>Inventario</ion-label>
+            </ion-item>
+
+            <ion-item *ngIf="esAdmin()" routerLink="/administracion" routerDirection="root" class="item-menu" routerLinkActive="seleccionado">
+              <ion-icon slot="start" name="settings-outline"></ion-icon>
+              <ion-label>Administración</ion-label>
+            </ion-item>
+
+            <div class="menu-divider"></div>
+
+            <ion-item (click)="cerrarSesion()" class="item-menu logout-btn" button="true">
+              <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
+              <ion-label color="danger">Cerrar Sesión</ion-label>
+            </ion-item>
+
+          </ion-menu-toggle>
+        </ion-list>
+
+        <!-- Créditos fijos al fondo -->
+        <div class="copyright-section">
+          <p>© 2026 CAMPS V 1.0.0</p>
+          <p>Desarrollado por: Jose Armando Villa Olvera</p>
+        </div>
+
+      </ion-content>
+    </ion-menu>
+
+    <!-- Aquí se inyectan todas las demás pantallas de tu aplicación -->
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+    
+  </ion-split-pane>
+</ion-app>
