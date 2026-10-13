@@ -25,7 +25,7 @@ export class NuevoPrestamoPage implements OnInit {
 
   // Referencias de los inputs
   @ViewChild('inputMatricula') inputMatricula!: IonInput;
-  @ViewChild('inputFecha') inputFecha!: IonInput; // Agregado para controlar el calendario
+  @ViewChild('inputFecha') inputFecha!: IonInput; 
   @ViewChild('inputHerramienta') inputHerramienta!: IonInput;
 
   // Estructura del préstamo
@@ -41,7 +41,9 @@ export class NuevoPrestamoPage implements OnInit {
   // Variables de control
   hoy = new Date().toISOString();
   receptorEncontrado: any = null;
+  
   listaMaestros: any[] = [];
+  listaEmpleados: any[] = []; // 🚀 NUEVO: Almacena a los trabajadores
   materiasFiltradas: string[] = [];
   
   // Inventario y Carrito
@@ -68,6 +70,7 @@ export class NuevoPrestamoPage implements OnInit {
   async ngOnInit() {
     await this.cargarInventario();
     await this.cargarMaestros();
+    await this.cargarEmpleados(); // 🚀 Cargamos también los empleados
     
     // Autofocus al cargar la página en la matrícula
     setTimeout(() => this.inputMatricula?.setFocus(), 500);
@@ -81,12 +84,15 @@ export class NuevoPrestamoPage implements OnInit {
     try { this.listaMaestros = await this.almacenService.obtenerMaestros(); } catch (e) { console.error(e); }
   }
 
+  async cargarEmpleados() {
+    try { this.listaEmpleados = await this.almacenService.obtenerEmpleados(); } catch (e) { console.error(e); }
+  }
+
   // ==========================================
   // FLUJO DE INTERACCIÓN SECUENCIAL
   // ==========================================
 
   async alValidarMatricula() {
-    // Al dar Enter en la matrícula, solo validamos
     await this.verificarReceptor();
   }
 
@@ -98,7 +104,6 @@ export class NuevoPrestamoPage implements OnInit {
   }
 
   alSeleccionarMateria() {
-    // Cuando el usuario elige la materia, mandamos a abrir el calendario de la fecha
     setTimeout(() => {
       this.abrirCalendario();
     }, 400); 
@@ -116,7 +121,6 @@ export class NuevoPrestamoPage implements OnInit {
   }
 
   alSeleccionarFecha() {
-    // Al elegir la fecha, saltamos directamente al escáner de herramientas
     if (this.prestamo.fechaEntrega) {
       setTimeout(() => this.inputHerramienta?.setFocus(), 300);
     }
@@ -149,13 +153,23 @@ export class NuevoPrestamoPage implements OnInit {
           this.cantidadPrestamosActuales = await this.almacenService.contarPrestamosActivos(id);
         }
       }
-    } else {
+    } else if (this.prestamo.tipoReceptor === 'profesor') {
       const prof = this.listaMaestros.find(p => String(p.num_maestro).trim() === String(id));
       if (prof && tieneCorreoValido(prof)) {
         this.receptorEncontrado = prof;
         this.prestamo.nombreReceptor = prof.nombre;
         this.materiasFiltradas = prof.materias || [];
         this.cantidadPrestamosActuales = await this.almacenService.contarPrestamosActivos(id);
+      }
+    } else if (this.prestamo.tipoReceptor === 'trabajador') {
+      // 🚀 NUEVA LÓGICA: Buscar en la lista de empleados asegurando que tenga rol de 'Trabajador'
+      const trab = this.listaEmpleados.find(e => String(e.num_empleado).trim() === String(id) && e.rol === 'Trabajador');
+      if (trab && tieneCorreoValido(trab)) {
+        this.receptorEncontrado = trab;
+        this.prestamo.nombreReceptor = trab.nombre;
+        this.cantidadPrestamosActuales = await this.almacenService.contarPrestamosActivos(id);
+      } else if (this.listaEmpleados.find(e => String(e.num_empleado).trim() === String(id))) {
+        this.mostrarMensaje('Este usuario es Administrador o Staff, no Trabajador operativo.', 'warning');
       }
     }
   }
@@ -209,7 +223,7 @@ export class NuevoPrestamoPage implements OnInit {
     }
 
     let tieneLimite = true;
-    if (this.prestamo.tipoReceptor === 'profesor' && this.receptorEncontrado?.departamento === 'CIENCIAS DEL SUELO') {
+    if (this.prestamo.tipoReceptor === 'profesor' && (this.receptorEncontrado?.departamento === 'CIENCIAS DEL SUELO' || this.receptorEncontrado?.departamento === 'SUELOS')) {
       tieneLimite = false;
     }
 
@@ -243,9 +257,16 @@ export class NuevoPrestamoPage implements OnInit {
       return;
     }
 
+    // 🚀 Autorizador dinámico
     const autorizador = this.prestamo.tipoReceptor === 'alumno' 
       ? this.prestamo.profesorAutoriza 
       : this.receptorEncontrado;
+
+    // 🚀 Info extra dinámica (Carrera, Docente o Departamento del trabajador)
+    let infoExtra = '';
+    if (this.prestamo.tipoReceptor === 'alumno') infoExtra = this.receptorEncontrado.carrera;
+    else if (this.prestamo.tipoReceptor === 'profesor') infoExtra = 'Personal Docente';
+    else infoExtra = `Trabajador - Depto: ${this.receptorEncontrado.departamento || 'General'}`;
 
     let exitos = 0;
     for (const h of this.carritoHerramientas) {
@@ -254,10 +275,11 @@ export class NuevoPrestamoPage implements OnInit {
         receptor: {
           id: this.prestamo.identificador,
           nombre: this.prestamo.nombreReceptor,
-          info_extra: this.prestamo.tipoReceptor === 'alumno' ? this.receptorEncontrado.carrera : 'Personal Docente'
+          correo: this.receptorEncontrado.correo, // 👈 Enviamos el correo directo para evitar búsquedas erróneas
+          info_extra: infoExtra
         },
         autorizador: {
-          num_empleado: autorizador?.num_maestro || 'S/N',
+          num_empleado: autorizador?.num_maestro || autorizador?.num_empleado || 'S/N',
           nombre: autorizador?.nombre || 'Auto-autorizado',
           departamento: autorizador?.departamento || 'N/A'
         },

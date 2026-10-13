@@ -6,8 +6,16 @@
     <ion-title>Inventario</ion-title>
     
     <ion-buttons slot="end">
+      <!-- Botón Descargar PDF -->
       <ion-button (click)="generarPDFInventario()" title="Descargar Reporte PDF">
-        <ion-icon name="download-outline" slot="icon-only" color="light"></ion-icon>
+        <span style="color: white; font-size: 0.85rem; margin-right: 4px; font-weight: bold;">PDF</span>
+        <ion-icon name="download-outline" color="light"></ion-icon>
+      </ion-button>
+
+      <!-- 🚀 NUEVO: Botón Descargar EXCEL -->
+      <ion-button (click)="generarExcelInventario()" title="Descargar Reporte Excel">
+        <span style="color: white; font-size: 0.85rem; margin-right: 4px; font-weight: bold;">EXCEL</span>
+        <ion-icon name="download-outline" color="light"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

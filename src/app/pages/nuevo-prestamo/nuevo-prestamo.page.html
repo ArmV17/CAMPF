@@ -12,6 +12,7 @@
 
     <ion-card class="tarjeta-formulario animated fadeIn">
       <ion-card-header>
+        <!-- 🚀 SECCIÓN DE SELECTOR DE RECEPTOR CON TRABAJADOR INCLUIDO -->
         <ion-segment [(ngModel)]="prestamo.tipoReceptor" (ionChange)="limpiarFormulario()">
           <ion-segment-button value="alumno">
             <ion-label>Alumno</ion-label>
@@ -19,11 +20,15 @@
           <ion-segment-button value="profesor">
             <ion-label>Profesor</ion-label>
           </ion-segment-button>
+          <ion-segment-button value="trabajador">
+            <ion-label>Trabajador</ion-label>
+          </ion-segment-button>
         </ion-segment>
       </ion-card-header>
 
       <ion-card-content>
         
+        <!-- ================= VISTA ALUMNO ================= -->
         <div *ngIf="prestamo.tipoReceptor === 'alumno'">
           <ion-item class="input-limpio ion-margin-top" lines="none">
             <ion-label position="stacked">Matrícula del Alumno</ion-label>
@@ -49,23 +54,24 @@
 
             <ion-item class="input-limpio ion-margin-top" lines="none">
               <ion-select label="Profesor que autoriza" labelPlacement="stacked" interface="popover"
-                          [(ngModel)]="prestamo.profesorAutoriza" (ionChange)="onProfesorChange()" 
-                          placeholder="Selecciona al maestro">
+                        [(ngModel)]="prestamo.profesorAutoriza" (ionChange)="onProfesorChange()" 
+                        placeholder="Selecciona al maestro">
                 <ion-select-option *ngFor="let p of listaMaestros" [value]="p">{{ p.nombre }}</ion-select-option>
               </ion-select>
             </ion-item>
 
             <ion-item class="input-limpio" lines="none" *ngIf="prestamo.profesorAutoriza">
               <ion-select label="Materia" labelPlacement="stacked" interface="popover"
-                          [(ngModel)]="prestamo.materia" 
-                          (ionChange)="alSeleccionarMateria()" 
-                          placeholder="Selecciona la materia">
+                        [(ngModel)]="prestamo.materia" 
+                        (ionChange)="alSeleccionarMateria()" 
+                        placeholder="Selecciona la materia">
                 <ion-select-option *ngFor="let m of materiasFiltradas" [value]="m">{{ m }}</ion-select-option>
               </ion-select>
             </ion-item>
           </div>
         </div>
 
+        <!-- ================= VISTA PROFESOR ================= -->
         <div *ngIf="prestamo.tipoReceptor === 'profesor'">
           <ion-item class="input-limpio ion-margin-top" lines="none">
             <ion-label position="stacked">Número de Maestro</ion-label>
@@ -106,15 +112,64 @@
 
             <ion-item class="input-limpio ion-margin-top" lines="none">
               <ion-select label="Materia que imparte" labelPlacement="stacked" interface="popover"
-                          [(ngModel)]="prestamo.materia" 
-                          (ionChange)="alSeleccionarMateria()" 
-                          placeholder="Selecciona la materia">
+                        [(ngModel)]="prestamo.materia" 
+                        (ionChange)="alSeleccionarMateria()" 
+                        placeholder="Selecciona la materia">
                 <ion-select-option *ngFor="let m of materiasFiltradas" [value]="m">{{ m }}</ion-select-option>
               </ion-select>
             </ion-item>
           </div>
         </div>
 
+        <!-- ================= VISTA TRABAJADOR (NUEVO) ================= -->
+        <div *ngIf="prestamo.tipoReceptor === 'trabajador'">
+          <ion-item class="input-limpio ion-margin-top" lines="none">
+            <ion-label position="stacked">Número de Empleado / ID</ion-label>
+            <ion-input 
+              #inputMatricula
+              [(ngModel)]="prestamo.identificador" 
+              (ionInput)="verificarReceptor()" 
+              (keyup.enter)="alValidarMatricula()"
+              type="text"
+              placeholder="Escriba el número de empleado">
+            </ion-input>
+            <ion-icon *ngIf="receptorEncontrado" name="checkmark-circle" color="success" slot="end"></ion-icon>
+          </ion-item>
+
+          <div *ngIf="receptorEncontrado" class="animated fadeIn">
+            
+            <!-- 🚀 ESTE BANNER AHORA TIENE LAS MISMAS CLASES QUE EL DEL PROFESOR -->
+            <div class="banner-alumno banner-docente">
+              <div class="flex-header">
+                <strong>{{ prestamo.nombreReceptor }}</strong>
+                <ion-badge class="badge-id-prestamo">ID: {{ receptorEncontrado.num_empleado }}</ion-badge>
+              </div>
+              
+              <div class="detalles-compactos">
+                <p class="txt-depto">Área: {{ receptorEncontrado.departamento || 'GENERAL' }}</p>
+              </div>
+
+              <div class="status-cupo ion-margin-top">
+                <p [style.color]="(cantidadPrestamosActuales + carritoHerramientas.length) >= 5 ? '#dc2626' : '#1e40af'">
+                  Cupo Trabajador: {{ cantidadPrestamosActuales + carritoHerramientas.length }} / 5
+                </p>
+              </div>
+            </div>
+
+            <!-- Campo de motivo o materia general opcional para trabajadores -->
+            <ion-item class="input-limpio ion-margin-top" lines="none">
+              <ion-input 
+                label="Motivo / Área del Préstamo" 
+                labelPlacement="stacked" 
+                [(ngModel)]="prestamo.materia" 
+                (keyup.enter)="alSeleccionarMateria()"
+                placeholder="Ej: Mantenimiento general">
+              </ion-input>
+            </ion-item>
+          </div>
+        </div>
+
+        <!-- FECHA DE ENTREGA COMPARTIDA -->
         <div *ngIf="receptorEncontrado" class="animated fadeIn">
           <ion-item class="input-limpio ion-margin-top" lines="none">
             <ion-label position="stacked">Fecha de Entrega</ion-label>
@@ -132,51 +187,52 @@
       </ion-card-content>
     </ion-card>
 
-   <ion-card class="tarjeta-formulario animated fadeIn" 
+    <!-- SECCIÓN DE BÚSQUEDA DE HERRAMIENTAS -->
+    <ion-card class="tarjeta-formulario animated fadeIn" 
     *ngIf="receptorEncontrado && (
       (prestamo.tipoReceptor === 'profesor' && receptorEncontrado.departamento === 'SUELOS') || 
       (cantidadPrestamosActuales + carritoHerramientas.length < 5)
     )">
-    <ion-card-header>
-      <ion-card-title class="titulo-seccion">
-        <ion-icon name="barcode-outline" class="icono-seccion"></ion-icon> Herramienta
-      </ion-card-title>
-    </ion-card-header>
-    
-    <ion-card-content>
-      <ion-item class="contenedor-escanner-minimal" lines="none">
-        
-        <ion-input 
-          #inputHerramienta
-          [(ngModel)]="codigoBusqueda" 
-          (ionInput)="buscarHerramienta()" 
-          (keyup.enter)="buscarHerramientaEscaneada()" 
-          placeholder="Escanea o escribe el código (Ej: ARA-01)"
-          class="input-texto-codigo">
-        </ion-input>
+      <ion-card-header>
+        <ion-card-title class="titulo-seccion">
+          <ion-icon name="barcode-outline" class="icono-seccion"></ion-icon> Herramienta
+        </ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <ion-item class="contenedor-escanner-minimal" lines="none">
+          <ion-input 
+            #inputHerramienta
+            [(ngModel)]="codigoBusqueda" 
+            (ionInput)="buscarHerramienta()" 
+            (keyup.enter)="buscarHerramientaEscaneada()" 
+            placeholder="Escanea o escribe el código (Ej: ARA-01)"
+            class="input-texto-codigo">
+          </ion-input>
 
-        <ion-button 
-          *ngIf="herramientaEncontrada && !herramientaEncontrada.prestada"
-          slot="end" 
-          fill="outline"
-          class="boton-anadir-clean"
-          (click)="agregarAlCarrito()">
-          <ion-icon name="add-outline" slot="start"></ion-icon>
-          Añadir
-        </ion-button>
-      </ion-item>
+          <ion-button 
+            *ngIf="herramientaEncontrada && !herramientaEncontrada.prestada"
+            slot="end" 
+            fill="outline"
+            class="boton-anadir-clean"
+            (click)="agregarAlCarrito()">
+            <ion-icon name="add-outline" slot="start"></ion-icon>
+            Añadir
+          </ion-button>
+        </ion-item>
 
-      <div *ngIf="herramientaEncontrada" class="info-previa-herramienta animated fadeIn">
-        <p>
-          <ion-text [color]="herramientaEncontrada.prestada ? 'danger' : 'dark'">
-            <strong>{{ herramientaEncontrada.nombre_herramienta }}</strong> 
-            ({{ herramientaEncontrada.num_herramienta }})
-          </ion-text>
-        </p>
-      </div>
-    </ion-card-content>
-  </ion-card>
+        <div *ngIf="herramientaEncontrada" class="info-previa-herramienta animated fadeIn">
+          <p>
+            <ion-text [color]="herramientaEncontrada.prestada ? 'danger' : 'dark'">
+              <strong>{{ herramientaEncontrada.nombre_herramienta }}</strong> 
+              ({{ herramientaEncontrada.num_herramienta }})
+            </ion-text>
+          </p>
+        </div>
+      </ion-card-content>
+    </ion-card>
 
+    <!-- CARRITO DE HERRAMIENTAS -->
     <div class="tarjeta-lista-prestamo animated fadeInUp" *ngIf="carritoHerramientas.length > 0">
       <h2 class="titulo-seccion-lista">Herramientas en lista <span>{{ carritoHerramientas.length }}</span></h2>
       <ion-item *ngFor="let item of carritoHerramientas; let i = index" class="item-carrito-estilizado" lines="none">
