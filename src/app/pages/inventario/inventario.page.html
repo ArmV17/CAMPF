@@ -12,7 +12,7 @@
         <ion-icon name="download-outline" color="light"></ion-icon>
       </ion-button>
 
-      <!-- 🚀 NUEVO: Botón Descargar EXCEL -->
+      <!-- Botón Descargar EXCEL -->
       <ion-button (click)="generarExcelInventario()" title="Descargar Reporte Excel">
         <span style="color: white; font-size: 0.85rem; margin-right: 4px; font-weight: bold;">EXCEL</span>
         <ion-icon name="download-outline" color="light"></ion-icon>
@@ -43,21 +43,37 @@
             {{ detalle.tipo }}
           </div>
 
-          <div class="fila-unidad" *ngFor="let unidad of detalle.items">
-            <div class="info-izquierda">
-              <div class="contenedor-icono-herramienta">
-                <ion-icon name="construct-outline"></ion-icon>
+          <div class="fila-unidad-contenedor" *ngFor="let unidad of detalle.items">
+            <div class="fila-unidad" (click)="cargarUltimosPrestamosHerramienta(unidad.num_herramienta)" style="cursor: pointer;">
+              <div class="info-izquierda">
+                <div class="contenedor-icono-herramienta">
+                  <ion-icon name="construct-outline"></ion-icon>
+                </div>
+                <span class="codigo-unidad">{{ unidad.num_herramienta }}</span>
               </div>
-              <span class="codigo-unidad">{{ unidad.num_herramienta }}</span>
+              
+              <div class="info-derecha">
+                <div class="estado-contenedor">
+                  <span class="punto-estado" [ngClass]="unidad.estado.toLowerCase()"></span>
+                  <span class="texto-estado">{{ unidad.estado }}</span>
+                  <ion-icon name="time-outline" style="margin-left: 8px; font-size: 1.1rem; color: var(--ion-color-medium);"></ion-icon>
+                </div>
+              </div>
             </div>
-            
-            <div class="info-derecha">
-              <div class="estado-contenedor">
-                <span class="punto-estado" [ngClass]="unidad.estado.toLowerCase()"></span>
-                <span class="texto-estado">{{ unidad.estado }}</span>
+
+            <!-- HISTORIAL DESPLEGABLE DE BÚSQUEDA -->
+            <div *ngIf="herramientaSeleccionadaHistorial === unidad.num_herramienta" class="tarjeta-historial-rapido animated fadeIn" style="background: #f8fafc; padding: 12px; border-radius: 8px; margin: 6px 0 12px 0; border: 1px solid #e2e8f0;">
+              <p style="font-size: 0.8rem; font-weight: bold; color: #475569; margin-bottom: 6px;">📋 Últimos préstamos de esta unidad:</p>
+              <div *ngIf="historialUltimosPrestamos.length === 0" style="font-size: 0.75rem; color: #94a3b8;">
+                No hay registros de préstamos previos para esta herramienta.
+              </div>
+              <div *ngFor="let p of historialUltimosPrestamos" style="font-size: 0.75rem; margin-bottom: 4px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px;">
+                👤 <strong>{{ p.receptor_nombre }}</strong> ({{ p.receptor_tipo }}) <br>
+                📅 Préstamo: {{ p.fecha_prestamo?.toDate() | date:'dd/MM/yyyy hh:mm a' }} | Estado: <span [style.color]="p.estado === 'Vencido' ? 'red' : 'green'">{{ p.estado }}</span>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -90,18 +106,44 @@
                 TIPO: {{ detalle.tipo }}
               </div>
 
-              <div class="fila-unidad" *ngFor="let unidad of detalle.items">
-                <div class="info-izquierda">
-                  <div class="contenedor-icono-herramienta">
-                    <ion-icon name="construct-outline"></ion-icon>
+              <div class="fila-unidad-contenedor" *ngFor="let unidad of detalle.items">
+                <div class="fila-unidad" (click)="cargarUltimosPrestamosHerramienta(unidad.num_herramienta)" style="cursor: pointer;">
+                  <div class="info-izquierda">
+                    <div class="contenedor-icono-herramienta">
+                      <ion-icon name="construct-outline"></ion-icon>
+                    </div>
+                    <span class="codigo-unidad">{{ unidad.num_herramienta }}</span>
                   </div>
-                  <span class="codigo-unidad">{{ unidad.num_herramienta }}</span>
+                  
+                  <div class="info-derecha">
+                    <div class="estado-contenedor">
+                      <span class="punto-estado" [ngClass]="unidad.estado?.toLowerCase() || 'disponible'"></span>
+                      <span class="texto-estado">{{ unidad.estado }}</span>
+                      <ion-icon name="time-outline" style="margin-left: 8px; font-size: 1.1rem; color: var(--ion-color-medium);"></ion-icon>
+                    </div>
+                  </div>
                 </div>
-                
-                <div class="info-derecha">
-                  <div class="estado-contenedor">
-                    <span class="punto-estado" [ngClass]="unidad.estado?.toLowerCase() || 'disponible'"></span>
-                    <span class="texto-estado">{{ unidad.estado }}</span>
+
+                <!-- HISTORIAL DESPLEGABLE CON OPCIÓN DE REPORTE PARA CUALQUIERA DE LOS 3 -->
+                <div *ngIf="herramientaSeleccionadaHistorial === unidad.num_herramienta" class="tarjeta-historial-rapido animated fadeIn" style="background: #f8fafc; padding: 12px; border-radius: 8px; margin: 6px 0 12px 0; border: 1px solid #e2e8f0;">
+                  
+                  <p style="font-size: 0.8rem; font-weight: bold; color: #475569; margin-bottom: 8px;">📋 Historial de últimos 3 préstamos (Genera el reporte de quien corresponda):</p>
+
+                  <div *ngIf="historialUltimosPrestamos.length === 0" style="font-size: 0.75rem; color: #94a3b8;">
+                    No hay registros de préstamos previos para esta herramienta.
+                  </div>
+
+                  <div *ngFor="let p of historialUltimosPrestamos; let i = index" style="font-size: 0.75rem; margin-bottom: 8px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <span *ngIf="i === 0" style="background: #fee2e2; color: #991b1b; padding: 1px 6px; border-radius: 4px; font-weight: bold; font-size: 0.65rem; margin-right: 4px;">👑 ÚLTIMO</span>
+                      👤 <strong>{{ p.receptor_nombre }}</strong> ({{ p.receptor_tipo }}) <br>
+                      📅 Préstamo: {{ p.fecha_prestamo?.toDate() | date:'dd/MM/yyyy hh:mm a' }} | Estado: <span [style.color]="p.estado === 'Vencido' ? 'red' : 'green'">{{ p.estado }}</span>
+                    </div>
+
+                    <!-- 🚀 Botón de reporte individual para este usuario en específico -->
+                    <ion-button size="small" fill="outline" color="dark" (click)="generarPDFPrestamoEspecifico(unidad, p)" style="font-size: 0.65rem; height: 28px;">
+                      <ion-icon name="document-text-outline" slot="start"></ion-icon> Reporte
+                    </ion-button>
                   </div>
                 </div>
               </div>

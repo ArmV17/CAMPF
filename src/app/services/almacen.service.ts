@@ -205,7 +205,7 @@ export class AlmacenService {
   }
 
   // ==========================================
-  // ALUMNOS (Actualizado con teléfono)
+  // ALUMNOS
   // ==========================================
   async registrarAlumno(alumno: any) {
     return runInInjectionContext(this.injector, async () => {
@@ -215,7 +215,7 @@ export class AlmacenService {
           nombre: this.encriptarTexto(alumno.nombre),
           carrera: alumno.carrera,
           correo: alumno.correo,
-          telefono: alumno.telefono || '' // 👈 Guardando teléfono
+          telefono: alumno.telefono || ''
         });
         return { exito: true };
       } catch (e: any) {
@@ -282,7 +282,7 @@ export class AlmacenService {
   }
 
   // ==========================================
-  // MAESTROS (Actualizado con teléfono)
+  // MAESTROS
   // ==========================================
   async obtenerMaestros() {
     return runInInjectionContext(this.injector, async () => {
@@ -324,7 +324,7 @@ export class AlmacenService {
           num_maestro: maestro.numMaestro,
           nombre: this.encriptarTexto(maestro.nombre),
           correo: maestro.correo,
-          telefono: maestro.telefono || '', // 👈 Guardando teléfono
+          telefono: maestro.telefono || '',
           materias: maestro.materias,
           departamento: this.encriptarTexto(maestro.departamento || 'SIN AREA')
         });
@@ -449,11 +449,14 @@ export class AlmacenService {
           ? `${datos.herramienta.nombre_herramienta} (${datos.herramienta.tipo_herramienta})`
           : datos.herramienta.nombre_herramienta;
 
+        // 🚀 Respetamos el tipo que viene del componente (Alumno, Profesor o Trabajador)
+        const tipoReceptorFinal = datos.receptor.tipo || (datos.esProfesor ? 'Profesor' : 'Alumno');
+
         const docData = {
           receptor_id: datos.receptor.id,
           receptor_nombre: datos.receptor.nombre,
           receptor_correo: correoFinal || 'sin_correo@utc.edu.mx',
-          receptor_tipo: datos.esProfesor ? 'Profesor' : 'Alumno',
+          receptor_tipo: tipoReceptorFinal, 
           receptor_info_extra: datos.receptor.info_extra || '',
           autorizado_por_nombre: datos.autorizador.nombre,
           autorizado_por_id: datos.autorizador.num_empleado,

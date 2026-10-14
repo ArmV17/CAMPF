@@ -64,15 +64,13 @@ export class AdministracionPage implements OnInit {
   nombresFiltrados: string[] = []; 
   tiposFiltrados: string[] = [];
 
-  // 🚀 Variable de Alumno con teléfono incluido
   alumnoNuevo = { matricula: '', nombre: '', carrera: '', correo: '', telefono: '' };
   
   // 🚀 Variables de Empleado/Trabajador
-  empleadoNuevo = { numEmpleado: '', nombre: '', password: '', rol: 'Staff', departamento: '', correo: '', telefono: '' };
+  empleadoNuevo = { numEmpleado: '', nombre: '', password: '', rol: 'Trabajador', departamento: '', correo: '', telefono: '' };
   
   herramientaNueva = { codigo: '', nombre: '', tipo: '', cantidad: 1, estado: 'Disponible' };
 
-  // 🚀 Variable de Maestro con teléfono incluido
   maestroNuevo = { numMaestro: '', nombre: '', correo: '', materias: [] as string[], departamento: '', telefono: '' };
   materiaTemp: string = ''; 
 
@@ -106,11 +104,13 @@ export class AdministracionPage implements OnInit {
       const rolGuardado = localStorage.getItem('userRol');
       const nombreGuardado = (localStorage.getItem('userName') || '').trim();
 
-      // 🔓 Cualquier Admin puede ver la pestaña de empleados
       this.esSuperAdmin = (rolGuardado === 'Admin');
-
-      // 🔒 Solo D.Forestal puede editar o eliminar usuarios
       this.esDForestal = nombreGuardado === 'Admin D.Forestal' || nombreGuardado.includes('Forestal');
+
+      // 🔒 REGLA DE ROL: Si no es D.Forestal y está creando un usuario nuevo, forzamos su rol a 'Trabajador'
+      if (!this.esDForestal) {
+        this.empleadoNuevo.rol = 'Trabajador';
+      }
 
       this.cdr.detectChanges(); 
       await this.cargarDatos(); 
@@ -126,7 +126,16 @@ export class AdministracionPage implements OnInit {
       this.actualizarCatalogoCarreras(this.alumnos);
       
       if (this.esSuperAdmin) {
-        this.empleados = await this.almacenService.obtenerEmpleados();
+        const todosEmpleados = await this.almacenService.obtenerEmpleados();
+        
+        // 🚀 FILTRADO DE EMPLEADOS:
+        // Si es D.Forestal ve a todos. Si es un Admin normal, SOLO ve a los que tienen rol 'Trabajador'.
+        if (this.esDForestal) {
+          this.empleados = todosEmpleados;
+        } else {
+          this.empleados = todosEmpleados.filter(e => e.rol === 'Trabajador');
+        }
+
       } else {
         this.empleados = [];
       }
@@ -758,9 +767,19 @@ export class AdministracionPage implements OnInit {
   }
 
   async guardarEmpleado() {
-    if (this.editandoEmpleado && !this.esDForestal) {
-      this.mostrarMensaje('Acceso denegado: Solo Admin D.Forestal puede editar usuarios.', 'danger');
+    // 🔒 REGLA: Si NO es D.Forestal, solo puede crear / editar cuentas con rol de 'Trabajador'
+    if (!this.esDForestal && this.empleadoNuevo.rol !== 'Trabajador') {
+      this.mostrarMensaje('Acceso denegado: Solo puedes crear o gestionar cuentas con rol de Trabajador.', 'danger');
       return;
+    }
+
+    if (this.editandoEmpleado && !this.esDForestal) {
+      // Validamos adicionalmente que el empleado que esté editando sea realmente un Trabajador
+      const empleadoOriginal = this.empleados.find(e => e.num_empleado === this.empleadoNuevo.numEmpleado);
+      if (empleadoOriginal && empleadoOriginal.rol !== 'Trabajador') {
+        this.mostrarMensaje('Acceso denegado: No puedes modificar cuentas que no sean de Trabajadores.', 'danger');
+        return;
+      }
     }
 
     if(!this.empleadoNuevo.numEmpleado || !this.empleadoNuevo.nombre || (!this.editandoEmpleado && !this.empleadoNuevo.password)){
@@ -768,6 +787,7 @@ export class AdministracionPage implements OnInit {
         return;
     }
 
+    // Como ahora el rol puede estar bloqueado o limitado a 'Trabajador', exigimos sus datos
     if (this.empleadoNuevo.rol === 'Trabajador') {
       if (!this.empleadoNuevo.departamento || !this.empleadoNuevo.correo || !this.empleadoNuevo.telefono) {
         this.mostrarMensaje('Faltan datos del trabajador (Departamento, Correo, Teléfono).', 'warning');
@@ -777,10 +797,6 @@ export class AdministracionPage implements OnInit {
         this.mostrarMensaje('El correo del trabajador no es válido.', 'danger');
         return;
       }
-    } else {
-      this.empleadoNuevo.departamento = '';
-      this.empleadoNuevo.correo = '';
-      this.empleadoNuevo.telefono = '';
     }
 
     if (!this.editandoEmpleado) {
@@ -807,8 +823,9 @@ export class AdministracionPage implements OnInit {
   }
 
   prepararEdicionEmpleado(e: any) {
-    if (!this.esDForestal) {
-      this.mostrarMensaje('Acceso denegado: Solo Admin D.Forestal puede editar usuarios.', 'danger');
+    // Si no es D.Forestal, solo puede editar si el usuario es un Trabajador
+    if (!this.esDForestal && e.rol !== 'Trabajador') {
+      this.mostrarMensaje('Acceso denegado: Solo puedes editar cuentas con rol de Trabajador.', 'danger');
       return;
     }
 
@@ -816,7 +833,7 @@ export class AdministracionPage implements OnInit {
       numEmpleado: e.num_empleado, 
       nombre: e.nombre, 
       password: '', 
-      rol: e.rol || 'Staff',
+      rol: e.rol || 'Trabajador',
       departamento: e.departamento || '',
       correo: e.correo || '',
       telefono: e.telefono || ''
@@ -826,21 +843,30 @@ export class AdministracionPage implements OnInit {
   }
 
   cancelarEdicionEmpleado() {
-    this.empleadoNuevo = { numEmpleado: '', nombre: '', password: '', rol: 'Staff', departamento: '', correo: '', telefono: '' };
+    // Si no es D.Forestal, mantenemos por defecto el rol en 'Trabajador' al limpiar
+    const rolPorDefecto = this.esDForestal ? 'Staff' : 'Trabajador';
+    this.empleadoNuevo = { numEmpleado: '', nombre: '', password: '', rol: rolPorDefecto, departamento: '', correo: '', telefono: '' };
     this.editandoEmpleado = false;
   }
 
   async confirmarEliminar(tabla: string, idVal: string, nombre: string) {
     const tablaFirebase = (tabla === 'empleados') ? 'usuarios' : tabla;
 
-    if (tablaFirebase === 'usuarios' && !this.esDForestal) {
-      const alertaPermiso = await this.alertController.create({
-        header: 'Acceso denegado',
-        message: 'No tienes permiso. Solo Admin D.Forestal puede eliminar usuarios.',
-        buttons: ['Aceptar']
-      });
-      await alertaPermiso.present();
-      return; 
+    if (tablaFirebase === 'usuarios') {
+      // Buscamos el empleado en la lista para verificar su rol antes de borrar
+      const empleadoAEliminar = this.empleados.find(e => e.num_empleado === idVal);
+      
+      if (!this.esDForestal) {
+        if (!empleadoAEliminar || empleadoAEliminar.rol !== 'Trabajador') {
+          const alertaPermiso = await this.alertController.create({
+            header: 'Acceso denegado',
+            message: 'No tienes permiso. Solo Admin D.Forestal puede eliminar este tipo de cuentas.',
+            buttons: ['Aceptar']
+          });
+          await alertaPermiso.present();
+          return;
+        }
+      }
     }
 
     const alert = await this.alertController.create({

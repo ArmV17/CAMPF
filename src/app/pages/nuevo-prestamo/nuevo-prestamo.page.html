@@ -12,7 +12,7 @@
 
     <ion-card class="tarjeta-formulario animated fadeIn">
       <ion-card-header>
-        <!-- 🚀 SECCIÓN DE SELECTOR DE RECEPTOR CON TRABAJADOR INCLUIDO -->
+        <!-- 🚀 SECCIÓN DE SELECTOR DE RECEPTOR -->
         <ion-segment [(ngModel)]="prestamo.tipoReceptor" (ionChange)="limpiarFormulario()">
           <ion-segment-button value="alumno">
             <ion-label>Alumno</ion-label>
@@ -121,7 +121,7 @@
           </div>
         </div>
 
-        <!-- ================= VISTA TRABAJADOR (NUEVO) ================= -->
+        <!-- ================= VISTA TRABAJADOR ================= -->
         <div *ngIf="prestamo.tipoReceptor === 'trabajador'">
           <ion-item class="input-limpio ion-margin-top" lines="none">
             <ion-label position="stacked">Número de Empleado / ID</ion-label>
@@ -138,7 +138,6 @@
 
           <div *ngIf="receptorEncontrado" class="animated fadeIn">
             
-            <!-- 🚀 ESTE BANNER AHORA TIENE LAS MISMAS CLASES QUE EL DEL PROFESOR -->
             <div class="banner-alumno banner-docente">
               <div class="flex-header">
                 <strong>{{ prestamo.nombreReceptor }}</strong>
@@ -156,7 +155,6 @@
               </div>
             </div>
 
-            <!-- Campo de motivo o materia general opcional para trabajadores -->
             <ion-item class="input-limpio ion-margin-top" lines="none">
               <ion-input 
                 label="Motivo / Área del Préstamo" 

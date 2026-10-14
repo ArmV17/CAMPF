@@ -43,7 +43,7 @@ export class NuevoPrestamoPage implements OnInit {
   receptorEncontrado: any = null;
   
   listaMaestros: any[] = [];
-  listaEmpleados: any[] = []; // 🚀 NUEVO: Almacena a los trabajadores
+  listaEmpleados: any[] = []; 
   materiasFiltradas: string[] = [];
   
   // Inventario y Carrito
@@ -70,7 +70,7 @@ export class NuevoPrestamoPage implements OnInit {
   async ngOnInit() {
     await this.cargarInventario();
     await this.cargarMaestros();
-    await this.cargarEmpleados(); // 🚀 Cargamos también los empleados
+    await this.cargarEmpleados(); 
     
     // Autofocus al cargar la página en la matrícula
     setTimeout(() => this.inputMatricula?.setFocus(), 500);
@@ -162,14 +162,14 @@ export class NuevoPrestamoPage implements OnInit {
         this.cantidadPrestamosActuales = await this.almacenService.contarPrestamosActivos(id);
       }
     } else if (this.prestamo.tipoReceptor === 'trabajador') {
-      // 🚀 NUEVA LÓGICA: Buscar en la lista de empleados asegurando que tenga rol de 'Trabajador'
-      const trab = this.listaEmpleados.find(e => String(e.num_empleado).trim() === String(id) && e.rol === 'Trabajador');
+      // 🚀 Búsqueda flexible en empleados: si se hace desde la vista de trabajador, lo aceptamos
+      const trab = this.listaEmpleados.find(e => String(e.num_empleado).trim() === String(id));
       if (trab && tieneCorreoValido(trab)) {
         this.receptorEncontrado = trab;
         this.prestamo.nombreReceptor = trab.nombre;
         this.cantidadPrestamosActuales = await this.almacenService.contarPrestamosActivos(id);
-      } else if (this.listaEmpleados.find(e => String(e.num_empleado).trim() === String(id))) {
-        this.mostrarMensaje('Este usuario es Administrador o Staff, no Trabajador operativo.', 'warning');
+      } else {
+        this.mostrarMensaje('Número de empleado no encontrado.', 'warning');
       }
     }
   }
@@ -257,16 +257,26 @@ export class NuevoPrestamoPage implements OnInit {
       return;
     }
 
-    // 🚀 Autorizador dinámico
     const autorizador = this.prestamo.tipoReceptor === 'alumno' 
       ? this.prestamo.profesorAutoriza 
       : this.receptorEncontrado;
 
-    // 🚀 Info extra dinámica (Carrera, Docente o Departamento del trabajador)
+    // 🚀 FORZAMOS EL TIPO SEGÚN LA VISTA ACTIVA DEL SEGMENTO
+    let tipoReceptorTexto = 'Alumno';
     let infoExtra = '';
-    if (this.prestamo.tipoReceptor === 'alumno') infoExtra = this.receptorEncontrado.carrera;
-    else if (this.prestamo.tipoReceptor === 'profesor') infoExtra = 'Personal Docente';
-    else infoExtra = `Trabajador - Depto: ${this.receptorEncontrado.departamento || 'General'}`;
+    let deptoTrabajador = '';
+
+    if (this.prestamo.tipoReceptor === 'alumno') {
+      tipoReceptorTexto = 'Alumno';
+      infoExtra = this.receptorEncontrado.carrera || 'N/A';
+    } else if (this.prestamo.tipoReceptor === 'profesor') {
+      tipoReceptorTexto = 'Profesor';
+      infoExtra = 'Personal Docente';
+    } else if (this.prestamo.tipoReceptor === 'trabajador') {
+      tipoReceptorTexto = 'Trabajador'; // 👈 Forzado garantizado por estar en la pestaña Trabajador
+      infoExtra = 'Personal Operativo';
+      deptoTrabajador = this.receptorEncontrado.departamento || 'GENERAL';
+    }
 
     let exitos = 0;
     for (const h of this.carritoHerramientas) {
@@ -275,8 +285,11 @@ export class NuevoPrestamoPage implements OnInit {
         receptor: {
           id: this.prestamo.identificador,
           nombre: this.prestamo.nombreReceptor,
-          correo: this.receptorEncontrado.correo, // 👈 Enviamos el correo directo para evitar búsquedas erróneas
-          info_extra: infoExtra
+          tipo: tipoReceptorTexto, // 👈 Envía explícitamente 'Trabajador'
+          correo: this.receptorEncontrado.correo || 'sin_correo@gmail.com',
+          telefono: this.receptorEncontrado.telefono || 'Sin registro',
+          info_extra: infoExtra,
+          departamento_trabajador: deptoTrabajador
         },
         autorizador: {
           num_empleado: autorizador?.num_maestro || autorizador?.num_empleado || 'S/N',

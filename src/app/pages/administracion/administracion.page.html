@@ -429,12 +429,18 @@
           <ion-item class="input-limpio" lines="none">
             <ion-input [label]="editandoEmpleado ? 'Nueva Contraseña (opcional)' : 'Contraseña'" type="password" labelPlacement="stacked" [(ngModel)]="empleadoNuevo.password" placeholder="Mín. 6 caracteres"></ion-input>
           </ion-item>
+
+          <!-- 🚀 SELECTOR DE ROL CONDICIONAL -->
           <ion-item class="input-limpio" lines="none">
-            <ion-select label="Rol" interface="popover" labelPlacement="stacked" [(ngModel)]="empleadoNuevo.rol">
+            <!-- Si es D.Forestal, ve el selector completo con Staff, Admin y Trabajador -->
+            <ion-select *ngIf="esDForestal" label="Rol" interface="popover" labelPlacement="stacked" [(ngModel)]="empleadoNuevo.rol">
               <ion-select-option value="Staff">Staff</ion-select-option>
               <ion-select-option value="Admin">Admin</ion-select-option>
               <ion-select-option value="Trabajador">Trabajador</ion-select-option>
             </ion-select>
+
+            <!-- Si es un Admin normal, solo se le fija y muestra el rol de Trabajador -->
+            <ion-input *ngIf="!esDForestal" label="Rol Asignado" labelPlacement="stacked" [readonly]="true" [(ngModel)]="empleadoNuevo.rol"></ion-input>
           </ion-item>
 
           <div *ngIf="empleadoNuevo.rol === 'Trabajador'" class="ion-margin-top" style="background: #f8f9fa; padding: 10px; border-radius: 8px;">
