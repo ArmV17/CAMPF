@@ -2,8 +2,11 @@ import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router'; 
 
-// 👇 IMPORTAMOS EL SERVICIO DE ALMACÉN (Crucial para usar el candado)
+// 👇 IMPORTAMOS EL SERVICIO DE ALMACÉN
 import { AlmacenService } from './services/almacen.service';
+
+// 👇 IMPORTAMOS CAPACITOR NETWORK PARA DETECTAR INTERNET
+import { Network } from '@capacitor/network';
 
 // 👇 IMPORTAMOS AlertController y MenuController QUE NECESITA EL VIGILANTE
 import { 
@@ -37,11 +40,12 @@ export class AppComponent implements OnInit, OnDestroy {
   
   private temporizadorInactividad: any;
   private readonly TIEMPO_LIMITE = 300000; // 5 minutos 
+  private networkListener: any;
 
   constructor(
     private router: Router,
     private almacenService: AlmacenService,  
-    private menuCtrl: MenuController,       
+    private menuCtrl: MenuController,         
     private alertController: AlertController  
   ) {
     addIcons({ 
@@ -55,12 +59,41 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.iniciarTemporizador();
+    await this.configurarMonitoreoRed();
   }
 
   ngOnDestroy() {
     this.limpiarTemporizador();
+    if (this.networkListener) {
+      this.networkListener.remove();
+    }
+  }
+
+  // ==========================================
+  // MONITOREO DE RED (ONLINE / OFFLINE)
+  // ==========================================
+  async configurarMonitoreoRed() {
+    // 1. Revisar estado al iniciar la app
+    const status = await Network.getStatus();
+    if (!status.connected) {
+      this.router.navigate(['/offline'], { replaceUrl: true });
+    }
+
+    // 2. Escuchar cambios de red en tiempo real tipando el parámetro 'status: any'
+    this.networkListener = await Network.addListener('networkStatusChange', (status: any) => {
+      if (!status.connected) {
+        console.warn('Conexión perdida. Redirigiendo a offline...');
+        this.router.navigate(['/offline'], { replaceUrl: true });
+      } else {
+        console.log('Conexión restablecida.');
+        if (this.router.url === '/offline') {
+          const destino = this.sesionIniciada() ? '/dashboard' : '/login';
+          this.router.navigate([destino], { replaceUrl: true });
+        }
+      }
+    });
   }
 
   // ==========================================

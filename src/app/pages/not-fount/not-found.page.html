@@ -1,0 +1,18 @@
+<ion-content class="fondo-claro ion-padding ion-text-center">
+  <div class="contenedor-error animated fadeIn">
+    <div class="icono-circulo-error notfound">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+    </div>
+    
+    <span class="codigo-404">404</span>
+    <h1 class="titulo-error">Página no encontrada</h1>
+    <p class="descripcion-error">
+      La dirección que buscas no existe o ha sido movida dentro del sistema de la Aplicación.
+    </p>
+
+    <ion-button expand="block" class="boton-accion" (click)="irAlInicio()">
+      <ion-icon name="home-outline" slot="start"></ion-icon>
+      Volver al Login
+    </ion-button>
+  </div>
+</ion-content>

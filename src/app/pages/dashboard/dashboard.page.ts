@@ -62,7 +62,7 @@ export class DashboardPage {
       documentTextOutline
     });
   }
-
+  
   async ionViewWillEnter() {
     await this.cargarDashboard();
   }
@@ -235,7 +235,7 @@ export class DashboardPage {
     
     doc.setFontSize(10);
     doc.text('DIVISIÓN DE INGENIERÍA', pageWidth / 2, 19, { align: 'center' });
-    doc.text('DEPARTAMENTO DE CIENCIAS DEL SUELO', pageWidth / 2, 23, { align: 'center' });
+    doc.text('DEPARTAMENTO DE FORESTAL', pageWidth / 2, 23, { align: 'center' });
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8); 
@@ -278,10 +278,10 @@ export class DashboardPage {
       
       let carreraDepto = p.receptor_info_extra || 'N/A';
       if (p.receptor_tipo === 'Profesor' || p.receptor_info_extra === 'Personal Docente') {
-         carreraDepto = p.autorizado_por_depto || 'Ciencias del Suelo';
+         carreraDepto = p.autorizado_por_depto || 'Forestal';
       }
-      if (carreraDepto.toUpperCase().includes('SUELOS')) {
-          carreraDepto = 'Ciencias del Suelo';
+      if (carreraDepto.toUpperCase().includes('FORESTAL')) {
+          carreraDepto = 'Forestal';
       }
 
       const llave = `${p.receptor_id}_${fechaPrestamo}_${p.estado}`;
@@ -347,10 +347,10 @@ export class DashboardPage {
       
       let carreraDepto = p.receptor_info_extra || 'N/A';
       if (p.receptor_tipo === 'Profesor' || p.receptor_info_extra === 'Personal Docente') {
-         carreraDepto = p.autorizado_por_depto || 'Ciencias del Suelo';
+         carreraDepto = p.autorizado_por_depto || 'Forestal';
       }
-      if (carreraDepto.toUpperCase().includes('SUELOS')) {
-          carreraDepto = 'Ciencias del Suelo';
+      if (carreraDepto.toUpperCase().includes('FORESTAL')) {
+          carreraDepto = 'Forestal';
       }
 
       const llave = `${p.receptor_id}_${fechaPrestamo}`;

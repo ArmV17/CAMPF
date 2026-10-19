@@ -363,6 +363,127 @@ ion-toolbar.toolbar-elegante {
 }
 
 /* ==========================================================================
+   8. ESTILOS PARA EL HISTORIAL DE PRÉSTAMOS RECIENTES EN INVENTARIO
+   ========================================================================== */
+.tarjeta-formulario {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+  background: var(--surface-card);
+  margin-bottom: 16px;
+}
+
+.titulo-seccion {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  margin: 0 0 4px 0;
+}
+
+.icono-seccion {
+  margin-right: 8px;
+  color: var(--primary-accent);
+  font-size: 1.2rem;
+}
+
+.subtitulo-seccion-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.item-historial-estilizado {
+  --background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  transition: all 0.3s var(--spring-physics);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: rgba(37, 99, 235, 0.2);
+      background: #f1f5f9;
+      transform: translateX(3px);
+    }
+  }
+}
+
+.header-item-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.info-principal-historial {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nombre-receptor {
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--text-main);
+}
+
+.detalles-historial-flex {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    ion-icon {
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.badge-tipo {
+  font-size: 0.62rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.badge-ultimo {
+  font-size: 0.62rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 800;
+}
+
+.boton-reporte-clean {
+  --border-color: #cbd5e1;
+  --color: var(--text-main);
+  --border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: none;
+  height: 34px;
+  
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      --background: var(--text-main);
+      --color: #ffffff;
+      --border-color: var(--text-main);
+    }
+  }
+}
+
+/* ==========================================================================
    CORRECCIONES DE IONIC
    ========================================================================== */
 ion-list {

@@ -1,0 +1,17 @@
+<ion-content class="fondo-claro ion-padding ion-text-center">
+  <div class="contenedor-error animated fadeIn">
+    <div class="icono-circulo-error offline">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+    </div>
+    
+    <h1 class="titulo-error">Sin conexión a Internet</h1>
+    <p class="descripcion-error">
+      Parece que te has quedado sin conexión. Verifica tu red Wi-Fi o datos móviles para continuar usando la Aplicación.
+    </p>
+
+    <ion-button expand="block" class="boton-accion" (click)="reintentarConexion()" [disabled]="cargando">
+      <ion-icon name="refresh-outline" slot="start" [class.fa-spin]="cargando"></ion-icon>
+      {{ cargando ? 'Comprobando...' : 'Reintentar Conexión' }}
+    </ion-button>
+  </div>
+</ion-content>

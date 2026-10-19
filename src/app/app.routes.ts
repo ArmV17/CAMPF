@@ -40,9 +40,17 @@ export const routes: Routes = [
     canActivate: [authGuard], 
     loadComponent: () => import('./pages/administracion/administracion.page').then( m => m.AdministracionPage)
   },
-  // Ruta comodín para redirigir cualquier error al login
+  {
+    path: 'offline',
+    loadComponent: () => import('./pages/ofline/offline.page').then(m => m.OfflinePage)
+  },
+  {
+    path: 'not-found',
+    loadComponent: () => import('./pages/not-fount/not-found.page').then(m => m.NotFoundPage)
+  },
+  // Ruta comodín para redirigir cualquier enlace inválido a la página 404
   {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: 'not-found'
   }
 ];

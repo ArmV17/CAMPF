@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { 
   IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, 
   IonButton, IonIcon, IonSearchbar, IonContent, IonAccordionGroup, 
-  IonAccordion, IonItem, IonLabel 
+  IonAccordion, IonItem, IonLabel, IonBadge, IonList
 } from '@ionic/angular/standalone';
 
 import jsPDF from 'jspdf';
@@ -17,7 +17,7 @@ import {
   constructOutline, barcodeOutline, searchOutline, fingerPrintOutline, 
   hammerOutline, chevronDownOutline, chevronUpOutline, chevronDownCircle,
   chevronUpCircle, cloudUploadOutline, imageOutline, cameraOutline, downloadOutline,
-  documentTextOutline, timeOutline, personOutline
+  documentTextOutline, timeOutline, personOutline, calendarOutline, ellipseOutline
 } from 'ionicons/icons';
 import { AlmacenService } from '../../services/almacen.service';
 
@@ -30,7 +30,7 @@ import { AlmacenService } from '../../services/almacen.service';
     CommonModule, FormsModule,
     IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, 
     IonButton, IonIcon, IonSearchbar, IonContent, IonAccordionGroup, 
-    IonAccordion, IonItem, IonLabel
+    IonAccordion, IonItem, IonLabel, IonBadge, IonList
   ]
 })
 export class InventarioPage {
@@ -49,7 +49,7 @@ export class InventarioPage {
       constructOutline, barcodeOutline, searchOutline, fingerPrintOutline, 
       hammerOutline, chevronDownOutline, chevronUpOutline, chevronDownCircle,
       chevronUpCircle, cloudUploadOutline, imageOutline, cameraOutline, downloadOutline,
-      documentTextOutline, timeOutline, personOutline
+      documentTextOutline, timeOutline, personOutline, calendarOutline, ellipseOutline
     });
   }
 
