@@ -307,7 +307,31 @@
               </ion-item>
             </ion-list>
 
-            <ion-button expand="block" fill="outline" color="primary" class="ion-margin-top" (click)="cancelarEdicionHerramienta()">
+            <!-- 🚀 CAMPO DE UBICACIÓN / RESGUARDO CON SUGERENCIAS EN EDICIÓN -->
+            <ion-item class="input-limpio ion-margin-top" lines="none" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+              <ion-input 
+                label="Ubicación / Resguardado por" 
+                labelPlacement="stacked" 
+                [(ngModel)]="herramientaNueva.resguardadoPor" 
+                (ionInput)="actualizarSugerenciasUbicacion()"
+                placeholder="Ej: Almacén Principal, Lab. Forestal, Prof. Carlos">
+              </ion-input>
+            </ion-item>
+
+            <div class="ion-padding-start ion-padding-bottom" *ngIf="ubicacionesFiltradas && ubicacionesFiltradas.length > 0">
+              <p style="font-size: 0.8rem; color: var(--ion-color-medium); margin-bottom: 5px;">Sugerencias de ubicación:</p>
+              <ion-chip *ngFor="let ub of ubicacionesFiltradas" (click)="seleccionarSugerenciaUbicacion(ub)" color="primary" outline="true">
+                <ion-label>📍 {{ ub }}</ion-label>
+                <ion-icon name="add-circle-outline"></ion-icon>
+              </ion-chip>
+            </div>
+
+            <ion-button expand="block" color="success" class="ion-margin-top" (click)="guardarHerramienta()">
+              <ion-icon name="save-outline" slot="start"></ion-icon>
+              Guardar Cambios
+            </ion-button>
+
+            <ion-button expand="block" fill="outline" color="medium" class="ion-margin-top" (click)="cancelarEdicionHerramienta()">
               <ion-icon name="close-circle-outline" slot="start"></ion-icon>
               Cerrar Información
             </ion-button>
@@ -366,6 +390,25 @@
               </ion-input>
             </ion-item>
 
+            <!-- 🚀 CAMPO DE UBICACIÓN / RESGUARDO CON SUGERENCIAS AL CREAR -->
+            <ion-item class="input-limpio" lines="none">
+              <ion-input 
+                label="Ubicación / Resguardado por" 
+                labelPlacement="stacked" 
+                [(ngModel)]="herramientaNueva.resguardadoPor" 
+                (ionInput)="actualizarSugerenciasUbicacion()"
+                placeholder="Ej: Almacén Principal, Lab. Forestal, Prof. Carlos">
+              </ion-input>
+            </ion-item>
+
+            <div class="ion-padding-start ion-padding-bottom" *ngIf="ubicacionesFiltradas && ubicacionesFiltradas.length > 0">
+              <p style="font-size: 0.8rem; color: var(--ion-color-medium); margin-bottom: 5px;">Sugerencias de ubicación:</p>
+              <ion-chip *ngFor="let ub of ubicacionesFiltradas" (click)="seleccionarSugerenciaUbicacion(ub)" color="primary" outline="true">
+                <ion-label>📍 {{ ub }}</ion-label>
+                <ion-icon name="add-circle-outline"></ion-icon>
+              </ion-chip>
+            </div>
+
             <div class="ion-padding-start ion-padding-bottom" *ngIf="tiposFiltrados && tiposFiltrados.length > 0">
               <p style="font-size: 0.8rem; color: var(--ion-color-medium); margin-bottom: 5px;">Tipos registrados:</p>
               <ion-chip *ngFor="let tipo of tiposFiltrados" (click)="seleccionarSugerenciaTipo(tipo)" color="primary" outline="true">
@@ -388,6 +431,14 @@
           <ion-label>
             <h3>{{ h.nombre_herramienta }}</h3>
             <p>{{ h.tipo_herramienta || 'Sin tipo' }} | {{ h.num_herramienta }}</p>
+            
+            <!-- 🚀 ETIQUETA VISIBLE DE DÓNDE ESTÁ LA HERRAMIENTA -->
+            <p style="margin-top: 5px; font-size: 0.8rem;">
+              📍 <strong>Ubicación:</strong> 
+              <span [style.color]="h.resguardadoPor && h.resguardadoPor !== 'Almacén' ? 'var(--ion-color-primary)' : 'inherit'">
+                {{ h.resguardadoPor || 'Almacén' }}
+              </span>
+            </p>
           </ion-label>
           <ion-buttons slot="end">
             <ion-button (click)="descargarBarraDirecto(h)" color="primary">

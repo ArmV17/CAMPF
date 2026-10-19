@@ -63,13 +63,22 @@ export class AdministracionPage implements OnInit {
 
   nombresFiltrados: string[] = []; 
   tiposFiltrados: string[] = [];
+  ubicacionesFiltradas: string[] = [];
 
   alumnoNuevo = { matricula: '', nombre: '', carrera: '', correo: '', telefono: '' };
   
   // 🚀 Variables de Empleado/Trabajador
   empleadoNuevo = { numEmpleado: '', nombre: '', password: '', rol: 'Trabajador', departamento: '', correo: '', telefono: '' };
   
-  herramientaNueva = { codigo: '', nombre: '', tipo: '', cantidad: 1, estado: 'Disponible' };
+  herramientaNueva = { 
+    codigo: '', 
+    nombre: '', 
+    tipo: '', 
+    cantidad: 1, 
+    estado: 'Disponible',
+    resguardadoPor: 'Almacén',
+    prestadoA: ''
+  };
 
   maestroNuevo = { numMaestro: '', nombre: '', correo: '', materias: [] as string[], departamento: '', telefono: '' };
   materiaTemp: string = ''; 
@@ -254,6 +263,31 @@ export class AdministracionPage implements OnInit {
     this.tiposFiltrados = [...new Set(tiposLimpias)] as string[];
   }
 
+  actualizarSugerenciasUbicacion() {
+    const busqueda = this.herramientaNueva.resguardadoPor?.toLowerCase().trim() || '';
+
+    const ubicacionesEnInventario = this.herramientas
+      .map(h => h.resguardadoPor)
+      .filter(u => u && u.trim() !== '');
+
+    const lugaresMaestros = this.maestros.map(m => `Prof. ${m.nombre}`);
+    const catalogoCompleto = [...new Set(['Almacén Principal', ...ubicacionesEnInventario, ...lugaresMaestros])];
+
+    if (!busqueda) {
+      this.ubicacionesFiltradas = [];
+      return;
+    }
+
+    this.ubicacionesFiltradas = catalogoCompleto.filter(u => 
+      u.toLowerCase().includes(busqueda) && u.toLowerCase() !== busqueda
+    ).slice(0, 4);
+  }
+
+  seleccionarSugerenciaUbicacion(ubicacion: string) {
+    this.herramientaNueva.resguardadoPor = ubicacion;
+    this.ubicacionesFiltradas = [];
+  }
+
   seleccionarSugerenciaNombre(nombre: string) {
     this.herramientaNueva.nombre = nombre;
     this.nombresFiltrados = [];
@@ -341,12 +375,15 @@ export class AdministracionPage implements OnInit {
 
     const nombreLimpio = this.formatearTexto(this.herramientaNueva.nombre);
     const tipoLimpio = this.formatearTexto(this.herramientaNueva.tipo);
+    const resguardoLimpio = this.herramientaNueva.resguardadoPor?.trim() || 'Almacén';
 
     if (this.editandoHerramienta) {
       const res = await this.almacenService.registrarHerramienta({
         codigo: this.herramientaNueva.codigo,
         nombre: nombreLimpio,
-        tipo: tipoLimpio
+        tipo: tipoLimpio,
+        estado: this.herramientaNueva.estado,
+        resguardadoPor: resguardoLimpio
       });
 
       if (res.exito) {
@@ -364,8 +401,10 @@ export class AdministracionPage implements OnInit {
 
         const dataParaFirebase = {
           codigo: this.herramientaNueva.codigo, 
-          nombre: nombreLimpio,              
-          tipo: tipoLimpio 
+          nombre: nombreLimpio,                             
+          tipo: tipoLimpio,
+          estado: this.herramientaNueva.estado,
+          resguardadoPor: resguardoLimpio
         };
 
         const res = await this.almacenService.registrarHerramienta(dataParaFirebase);
@@ -375,7 +414,9 @@ export class AdministracionPage implements OnInit {
           this.herramientas.push({
             nombre_herramienta: dataParaFirebase.nombre,
             num_herramienta: dataParaFirebase.codigo,
-            tipo_herramienta: dataParaFirebase.tipo
+            tipo_herramienta: dataParaFirebase.tipo,
+            estado: dataParaFirebase.estado,
+            resguardadoPor: dataParaFirebase.resguardadoPor
           });
         }
       }
@@ -393,6 +434,8 @@ export class AdministracionPage implements OnInit {
       nombre: h.nombre_herramienta, 
       tipo: h.tipo_herramienta,
       estado: h.estado || 'Disponible',
+      resguardadoPor: h.resguardadoPor || 'Almacén',
+      prestadoA: h.prestadoA || '',
       cantidad: 1 
     } as any;
     this.editandoHerramienta = true;
@@ -414,12 +457,15 @@ export class AdministracionPage implements OnInit {
       nombre: '', 
       tipo: '', 
       cantidad: 1, 
-      estado: 'Disponible' 
+      estado: 'Disponible',
+      resguardadoPor: 'Almacén',
+      prestadoA: ''
     } as any;
 
     this.editandoHerramienta = false;
     this.nombresFiltrados = [];
     this.tiposFiltrados = [];
+    this.ubicacionesFiltradas = [];
     this.forzarInputTipo = false;
   }
 
@@ -428,7 +474,8 @@ export class AdministracionPage implements OnInit {
       codigo: this.herramientaNueva.codigo,
       nombre: this.herramientaNueva.nombre,
       tipo: this.herramientaNueva.tipo,
-      estado: nuevoEstado
+      estado: nuevoEstado,
+      resguardadoPor: this.herramientaNueva.resguardadoPor
     };
 
     const res = await this.almacenService.registrarHerramienta(dataActualizada);
@@ -448,7 +495,8 @@ export class AdministracionPage implements OnInit {
       codigo: h.num_herramienta, 
       nombre: h.nombre_herramienta,
       tipo: h.tipo_herramienta || '',
-      estado: nuevoEstado
+      estado: nuevoEstado,
+      resguardadoPor: h.resguardadoPor || 'Almacén'
     };
 
     try {
@@ -767,14 +815,12 @@ export class AdministracionPage implements OnInit {
   }
 
   async guardarEmpleado() {
-    // 🔒 REGLA: Si NO es D.Forestal, solo puede crear / editar cuentas con rol de 'Trabajador'
     if (!this.esDForestal && this.empleadoNuevo.rol !== 'Trabajador') {
       this.mostrarMensaje('Acceso denegado: Solo puedes crear o gestionar cuentas con rol de Trabajador.', 'danger');
       return;
     }
 
     if (this.editandoEmpleado && !this.esDForestal) {
-      // Validamos adicionalmente que el empleado que esté editando sea realmente un Trabajador
       const empleadoOriginal = this.empleados.find(e => e.num_empleado === this.empleadoNuevo.numEmpleado);
       if (empleadoOriginal && empleadoOriginal.rol !== 'Trabajador') {
         this.mostrarMensaje('Acceso denegado: No puedes modificar cuentas que no sean de Trabajadores.', 'danger');
@@ -787,7 +833,6 @@ export class AdministracionPage implements OnInit {
         return;
     }
 
-    // Como ahora el rol puede estar bloqueado o limitado a 'Trabajador', exigimos sus datos
     if (this.empleadoNuevo.rol === 'Trabajador') {
       if (!this.empleadoNuevo.departamento || !this.empleadoNuevo.correo || !this.empleadoNuevo.telefono) {
         this.mostrarMensaje('Faltan datos del trabajador (Departamento, Correo, Teléfono).', 'warning');
@@ -823,7 +868,6 @@ export class AdministracionPage implements OnInit {
   }
 
   prepararEdicionEmpleado(e: any) {
-    // Si no es D.Forestal, solo puede editar si el usuario es un Trabajador
     if (!this.esDForestal && e.rol !== 'Trabajador') {
       this.mostrarMensaje('Acceso denegado: Solo puedes editar cuentas con rol de Trabajador.', 'danger');
       return;
@@ -843,7 +887,6 @@ export class AdministracionPage implements OnInit {
   }
 
   cancelarEdicionEmpleado() {
-    // Si no es D.Forestal, mantenemos por defecto el rol en 'Trabajador' al limpiar
     const rolPorDefecto = this.esDForestal ? 'Staff' : 'Trabajador';
     this.empleadoNuevo = { numEmpleado: '', nombre: '', password: '', rol: rolPorDefecto, departamento: '', correo: '', telefono: '' };
     this.editandoEmpleado = false;
@@ -853,7 +896,6 @@ export class AdministracionPage implements OnInit {
     const tablaFirebase = (tabla === 'empleados') ? 'usuarios' : tabla;
 
     if (tablaFirebase === 'usuarios') {
-      // Buscamos el empleado en la lista para verificar su rol antes de borrar
       const empleadoAEliminar = this.empleados.find(e => e.num_empleado === idVal);
       
       if (!this.esDForestal) {
