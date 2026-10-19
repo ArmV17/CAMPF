@@ -75,11 +75,14 @@ export class DevolucionesPage implements OnInit {
           };
         }
         
+        // 🚀 Se mapean las propiedades del kit (es_kit y componentes_vinculados)
         grupos[llave].datos_devolucion.push({
           prestamoId: p.id,
           herramientaId: p.herramienta_id_db,
           codigo: p.herramienta_codigo,
           nombre: p.herramienta_nombre,
+          es_kit: p.es_kit || false,
+          componentes_vinculados: p.componentes_vinculados || [],
           validado: false 
         });
       });
@@ -135,12 +138,10 @@ export class DevolucionesPage implements OnInit {
 
     if (!codigoIngresado) return;
 
-    // Buscamos si existe una herramienta en este grupo cuyo código coincida exactamente
     const herramientaEncontrada = grupo.datos_devolucion.find(
       (h: any) => h.codigo.toUpperCase().trim() === codigoIngresado
     );
 
-    // Si coincide exactamente de manera automática al escribir o escanear
     if (herramientaEncontrada) {
       if (!herramientaEncontrada.validado) {
         herramientaEncontrada.validado = true;
@@ -148,7 +149,6 @@ export class DevolucionesPage implements OnInit {
       }
       this.actualizarEstadosGrupo(grupo);
 
-      // Limpiamos el input de inmediato y pasamos al siguiente foco o limpiamos para el próximo escaneo
       setTimeout(() => {
         grupo.inputValidacion = '';
         
@@ -159,9 +159,6 @@ export class DevolucionesPage implements OnInit {
         }
       }, 50);
     } else {
-      // Si el texto escrito ya es largo (por ejemplo, igual o mayor a la longitud de los códigos) 
-      // y aun así no coincide con ninguno, avisamos que no pertenece.
-      // Esto evita que marque error mientras vas escribiendo la letra "P", "PA", etc.
       const longitudPromedioCodigo = grupo.datos_devolucion[0]?.codigo?.length || 6;
       
       if (codigoIngresado.length >= longitudPromedioCodigo) {

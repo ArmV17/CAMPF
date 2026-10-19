@@ -12,7 +12,7 @@
 
     <ion-card class="tarjeta-formulario animated fadeIn">
       <ion-card-header>
-        <!-- 🚀 SECCIÓN DE SELECTOR DE RECEPTOR -->
+        <!-- SECCIÓN DE SELECTOR DE RECEPTOR -->
         <ion-segment [(ngModel)]="prestamo.tipoReceptor" (ionChange)="limpiarFormulario()">
           <ion-segment-button value="alumno">
             <ion-label>Alumno</ion-label>
@@ -193,7 +193,7 @@
     )">
       <ion-card-header>
         <ion-card-title class="titulo-seccion">
-          <ion-icon name="barcode-outline" class="icono-seccion"></ion-icon> Herramienta
+          <ion-icon name="barcode-outline" class="icono-seccion"></ion-icon> Herramienta / Kit
         </ion-card-title>
       </ion-card-header>
       
@@ -219,26 +219,46 @@
           </ion-button>
         </ion-item>
 
-        <div *ngIf="herramientaEncontrada" class="info-previa-herramienta animated fadeIn">
+        <div *ngIf="herramientaEncontrada" class="info-previa-herramienta animated fadeIn" style="margin-top: 8px;">
           <p>
             <ion-text [color]="herramientaEncontrada.prestada ? 'danger' : 'dark'">
               <strong>{{ herramientaEncontrada.nombre_herramienta }}</strong> 
+              <span *ngIf="herramientaEncontrada.es_kit" style="background: #3b82f6; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 4px;">📦 KIT</span>
               ({{ herramientaEncontrada.num_herramienta }})
             </ion-text>
           </p>
+
+          <!-- Previsualización de accesorios si es kit al escanear -->
+          <div *ngIf="herramientaEncontrada.es_kit && herramientaEncontrada.componentes_vinculados?.length > 0" style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">
+            <strong>Incluye:</strong> 
+            <span *ngFor="let c of herramientaEncontrada.componentes_vinculados; let esUltimo = last">
+              {{ c.cantidad }}x {{ c.nombre }}{{ esUltimo ? '' : ', ' }}
+            </span>
+          </div>
         </div>
       </ion-card-content>
     </ion-card>
 
-    <!-- CARRITO DE HERRAMIENTAS -->
+    <!-- CARRITO DE HERRAMIENTAS Y KITS -->
     <div class="tarjeta-lista-prestamo animated fadeInUp" *ngIf="carritoHerramientas.length > 0">
       <h2 class="titulo-seccion-lista">Herramientas en lista <span>{{ carritoHerramientas.length }}</span></h2>
       <ion-item *ngFor="let item of carritoHerramientas; let i = index" class="item-carrito-estilizado" lines="none">
         <ion-icon name="construct-outline" slot="start" class="icono-lista"></ion-icon>
         
         <ion-label>
-          <h3>{{ item.nombre_herramienta }}</h3>
+          <h3>
+            {{ item.nombre_herramienta }}
+            <span *ngIf="item.es_kit" style="background: #3b82f6; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 6px;">📦 KIT</span>
+          </h3>
           <p>Código: {{ item.num_herramienta }}</p>
+
+          <!-- Previsualización de componentes en el carrito -->
+          <div *ngIf="item.es_kit && item.componentes_vinculados?.length > 0" style="margin-top: 4px; font-size: 0.75rem; color: #64748b;">
+            <strong>Incluye:</strong> 
+            <span *ngFor="let c of item.componentes_vinculados; let esUltimo = last">
+              {{ c.cantidad }}x {{ c.nombre }}{{ esUltimo ? '' : ', ' }}
+            </span>
+          </div>
         </ion-label>
 
         <ion-button slot="end" fill="clear" (click)="quitarDelCarrito(i)" class="boton-borrar">

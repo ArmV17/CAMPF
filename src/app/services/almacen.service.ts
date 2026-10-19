@@ -378,7 +378,7 @@ export class AlmacenService {
   }
 
   // ==========================================
-  // INVENTARIO
+  // INVENTARIO Y KITS
   // ==========================================
   async obtenerInventario() {
     return runInInjectionContext(this.injector, async () => {
@@ -407,7 +407,10 @@ export class AlmacenService {
           num_herramienta: herramienta.codigo,
           nombre_herramienta: herramienta.nombre,
           tipo_herramienta: herramienta.tipo,
-          estado: herramienta.estado || 'Disponible' 
+          estado: herramienta.estado || 'Disponible',
+          resguardadoPor: herramienta.resguardadoPor || 'Almacén',
+          es_kit: herramienta.es_kit || false,
+          componentes_vinculados: herramienta.componentes_vinculados || []
         });
         return { exito: true };
       } catch (e: any) {
@@ -449,7 +452,6 @@ export class AlmacenService {
           ? `${datos.herramienta.nombre_herramienta} (${datos.herramienta.tipo_herramienta})`
           : datos.herramienta.nombre_herramienta;
 
-        // 🚀 Respetamos el tipo que viene del componente (Alumno, Profesor o Trabajador)
         const tipoReceptorFinal = datos.receptor.tipo || (datos.esProfesor ? 'Profesor' : 'Alumno');
 
         const docData = {
@@ -465,6 +467,8 @@ export class AlmacenService {
           herramienta_id_db: datos.herramienta.id || datos.herramienta.num_herramienta, 
           herramienta_codigo: datos.herramienta.num_herramienta,
           herramienta_nombre: nombreHerramientaFull,
+          es_kit: datos.herramienta.es_kit || false,
+          componentes_vinculados: datos.herramienta.componentes_vinculados || [],
           fecha_prestamo: new Date(),
           fecha_devolucion_pactada: fechaCorregida,
           empleado_almacen: nombreEmpleadoSesion,

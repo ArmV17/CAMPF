@@ -50,11 +50,23 @@
                   <ion-icon name="construct-outline"></ion-icon>
                 </div>
                 <div>
-                  <span class="codigo-unidad">{{ unidad.num_herramienta }}</span>
-                  <!-- 🚀 UBICACIÓN EN BÚSQUEDA -->
+                  <span class="codigo-unidad">
+                    {{ unidad.num_herramienta }}
+                    <span *ngIf="unidad.es_kit" style="background: #3b82f6; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 6px;">📦 KIT</span>
+                  </span>
+
+                  <!-- UBICACIÓN EN BÚSQUEDA -->
                   <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #64748b;">
                     📍 <strong>Ubicación:</strong> <span [style.color]="unidad.resguardadoPor && unidad.resguardadoPor !== 'Almacén' ? 'var(--ion-color-primary)' : 'inherit'">{{ unidad.resguardadoPor || 'Almacén' }}</span>
                   </p>
+
+                  <!-- 🚀 PREVISUALIZACIÓN DE ACCESORIOS EN BÚSQUEDA -->
+                  <div *ngIf="unidad.es_kit && unidad.componentes_vinculados?.length > 0" style="margin-top: 3px; font-size: 0.7rem; color: #64748b;">
+                    <strong>Incluye:</strong> 
+                    <span *ngFor="let c of unidad.componentes_vinculados; let esUltimo = last">
+                      {{ c.cantidad }}x {{ c.nombre }}{{ esUltimo ? '' : ', ' }}
+                    </span>
+                  </div>
                 </div>
               </div>
               
@@ -119,11 +131,23 @@
                       <ion-icon name="construct-outline"></ion-icon>
                     </div>
                     <div>
-                      <span class="codigo-unidad">{{ unidad.num_herramienta }}</span>
-                      <!-- 🚀 UBICACIÓN EN ACORDEÓN -->
+                      <span class="codigo-unidad">
+                        {{ unidad.num_herramienta }}
+                        <span *ngIf="unidad.es_kit" style="background: #3b82f6; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 6px;">📦 KIT</span>
+                      </span>
+                      
+                      <!-- UBICACIÓN EN ACORDEÓN -->
                       <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #64748b;">
                         📍 <strong>Ubicación: </strong> <span [style.color]="unidad.resguardadoPor && unidad.resguardadoPor !== 'Almacén' ? 'var(--ion-color-primary)' : 'inherit'">{{ unidad.resguardadoPor || 'Almacén' }}</span>
                       </p>
+
+                      <!-- 🚀 PREVISUALIZACIÓN DE ACCESORIOS EN ACORDEÓN -->
+                      <div *ngIf="unidad.es_kit && unidad.componentes_vinculados?.length > 0" style="margin-top: 3px; font-size: 0.7rem; color: #64748b;">
+                        <strong>Incluye:</strong> 
+                        <span *ngFor="let c of unidad.componentes_vinculados; let esUltimo = last">
+                          {{ c.cantidad }}x {{ c.nombre }}{{ esUltimo ? '' : ', ' }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
@@ -152,7 +176,7 @@
                       📅 Préstamo: {{ p.fecha_prestamo?.toDate() | date:'dd/MM/yyyy hh:mm a' }} | Estado: <span [style.color]="p.estado === 'Vencido' ? 'red' : 'green'">{{ p.estado }}</span>
                     </div>
 
-                    <!-- 🚀 Botón de reporte individual para este usuario en específico -->
+                    <!-- Botón de reporte individual para este usuario en específico -->
                     <ion-button size="small" fill="outline" color="dark" (click)="generarPDFPrestamoEspecifico(unidad, p)" style="font-size: 0.65rem; height: 28px;">
                       <ion-icon name="document-text-outline" slot="start"></ion-icon> Reporte
                     </ion-button>

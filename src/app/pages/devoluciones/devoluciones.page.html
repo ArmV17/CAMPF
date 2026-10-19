@@ -59,30 +59,46 @@
             <div class="lista-check-herramientas">
               <div *ngFor="let h of grupo.datos_devolucion" 
                    class="check-item-devolucion" 
-                   [class.validado]="h.validado">
+                   [class.validado]="h.validado"
+                   style="flex-direction: column; align-items: stretch; padding: 10px;">
                 
-                <div class="info-h">
-                  <ion-icon [name]="h.validado ? 'checkmark-circle' : 'time-outline'" 
-                            [color]="h.validado ? 'success' : 'medium'"></ion-icon>
-                  <div class="textos-h">
-                    <span class="nombre-h">{{ h.nombre }}</span>
-                    <span class="codigo-h">({{ h.codigo }})</span>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="info-h" style="display: flex; align-items: center;">
+                    <ion-icon [name]="h.validado ? 'checkmark-circle' : 'time-outline'" 
+                              [color]="h.validado ? 'success' : 'medium'"
+                              style="font-size: 1.3rem; margin-right: 8px;"></ion-icon>
+                    <div class="textos-h">
+                      <span class="nombre-h">
+                        {{ h.nombre }}
+                        <span *ngIf="h.es_kit" style="background: #3b82f6; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 6px;">📦 KIT</span>
+                      </span>
+                      <span class="codigo-h">({{ h.codigo }})</span>
+                    </div>
                   </div>
+                  
+                  <ion-button *ngIf="h.validado" 
+                              fill="clear" 
+                              size="small" 
+                              color="success" 
+                              (click)="devolverUna(grupo, h)"
+                              class="animated zoomIn">
+                    <ion-icon name="arrow-undo-outline" slot="start"></ion-icon>
+                    Entregar
+                  </ion-button>
                 </div>
-                
-                <ion-button *ngIf="h.validado" 
-                            fill="clear" 
-                            size="small" 
-                            color="success" 
-                            (click)="devolverUna(grupo, h)"
-                            class="animated zoomIn">
-                  <ion-icon name="arrow-undo-outline" slot="start"></ion-icon>
-                  Entregar
-                </ion-button>
+
+                <!-- 🚀 Desglose alineado a la derecha, a la par del texto principal -->
+                <div *ngIf="h.es_kit && h.componentes_vinculados?.length > 0" style="margin-top: 6px; padding-left: 40px; font-size: 0.75rem; color: #64748b;">
+                  <strong>Componentes a revisar:</strong> 
+                  <span *ngFor="let c of h.componentes_vinculados; let esUltimo = last">
+                    {{ c.cantidad }}x {{ c.nombre }}{{ esUltimo ? '' : ', ' }}
+                  </span>
+                </div>
+
               </div>
             </div>
 
-            <!-- 👇 EL BOTÓN MASIVO ESTÁ AQUÍ ADENTRO PARA CONTROLAR SU POSICIÓN POR CSS 👇 -->
+            <!-- BOTÓN MASIVO -->
             <ion-button 
                 class="boton-recibir-grupo" 
                 color="success"

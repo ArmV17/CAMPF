@@ -27,7 +27,7 @@
                 <ion-label color="danger">PDF Vencidos</ion-label>
               </ion-item>
               
-              <!-- 🚀 Opciones de Excel -->
+              <!-- Opciones de Excel -->
               <ion-item button (click)="generarExcelGeneral()">
                 <ion-icon name="document-text-outline" slot="start" color="success"></ion-icon>
                 <ion-label color="success">Excel General</ion-label>
@@ -85,7 +85,6 @@
           <ion-label>
             <div class="header-item-flex">
               <h3 class="receptor-nombre">{{ grupo.receptor_nombre }}</h3>
-              <!-- 🚀 COLOR AZUL PARA TRABAJADOR Y MORADO PARA PROFESOR -->
               <ion-badge 
                 class="badge-tipo"
                 [color]="grupo.receptor_tipo?.toLowerCase() === 'profesor' ? 'tertiary' : (grupo.receptor_tipo?.toLowerCase() === 'trabajador' ? 'primary' : 'medium')" 
@@ -94,7 +93,7 @@
               </ion-badge>
             </div>
 
-            <!-- DETALLES ACADÉMICOS: Profesor y Departamento alineados -->
+            <!-- DETALLES ACADÉMICOS -->
             <div class="detalles-academicos">
               <div class="fila-academica-flex">
                 <p class="info-secundaria">
@@ -124,10 +123,22 @@
               </p>
             </div>
             
+            <!-- 🚀 LISTADO DE HERRAMIENTAS Y KITS CON COMPONENTES -->
             <div class="mini-lista-herramientas" style="margin-top: 8px;">
-              <span *ngFor="let h of grupo.herramientas; let last = last" class="tag-herramienta vencida">
-                {{ h.nombre }}{{ !last ? ',' : '' }}
-              </span>
+              <div *ngFor="let h of grupo.herramientas" style="margin-bottom: 4px;">
+                <span class="tag-herramienta vencida">
+                  {{ h.nombre }}
+                  <span *ngIf="h.es_kit" style="background: #3b82f6; color: white; font-size: 0.6rem; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 4px;">📦 KIT</span>
+                </span>
+                
+                <!-- Desglose de componentes del kit en Dashboard -->
+                <div *ngIf="h.es_kit && h.componentes_vinculados?.length > 0" style="font-size: 0.7rem; color: #64748b; margin-top: 2px; padding-left: 4px;">
+                  ↳ <strong>Accesorios:</strong> 
+                  <span *ngFor="let c of h.componentes_vinculados; let esUltimo = last">
+                    {{ c.cantidad }}x {{ c.nombre }}{{ esUltimo ? '' : ', ' }}
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div class="info-adicional-dashboard">
@@ -160,7 +171,6 @@
           <ion-label>
             <div class="header-item-flex">
               <h3 class="receptor-nombre">{{ grupo.receptor_nombre }}</h3>
-              <!-- 🚀 COLOR AZUL PARA TRABAJADOR Y MORADO PARA PROFESOR -->
               <ion-badge 
                 class="badge-tipo"
                 [color]="grupo.receptor_tipo?.toLowerCase() === 'profesor' ? 'tertiary' : (grupo.receptor_tipo?.toLowerCase() === 'trabajador' ? 'primary' : 'medium')" 
@@ -169,7 +179,7 @@
               </ion-badge>
             </div>
 
-            <!-- DETALLES ACADÉMICOS: Profesor y Departamento alineados -->
+            <!-- DETALLES ACADÉMICOS -->
             <div class="detalles-academicos">
               <div class="fila-academica-flex">
                 <p class="info-secundaria">
@@ -199,10 +209,22 @@
               </p>
             </div>
             
+            <!-- 🚀 LISTADO DE HERRAMIENTAS Y KITS CON COMPONENTES -->
             <div class="mini-lista-herramientas" style="margin-top: 8px;">
-              <span *ngFor="let h of grupo.herramientas; let last = last" class="tag-herramienta">
-                {{ h.nombre }}{{ !last ? ',' : '' }}
-              </span>
+              <div *ngFor="let h of grupo.herramientas" style="margin-bottom: 4px;">
+                <span class="tag-herramienta">
+                  {{ h.nombre }}
+                  <span *ngIf="h.es_kit" style="background: #3b82f6; color: white; font-size: 0.6rem; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 4px;">📦 KIT</span>
+                </span>
+                
+                <!-- Desglose de componentes del kit en Dashboard -->
+                <div *ngIf="h.es_kit && h.componentes_vinculados?.length > 0" style="font-size: 0.7rem; color: #64748b; margin-top: 2px; padding-left: 4px;">
+                  ↳ <strong>Accesorios:</strong> 
+                  <span *ngFor="let c of h.componentes_vinculados; let esUltimo = last">
+                    {{ c.cantidad }}x {{ c.nombre }}{{ esUltimo ? '' : ', ' }}
+                  </span>
+                </div>
+              </div>
             </div>
             
             <div class="info-adicional-dashboard">

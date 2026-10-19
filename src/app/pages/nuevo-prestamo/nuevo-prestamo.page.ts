@@ -162,7 +162,6 @@ export class NuevoPrestamoPage implements OnInit {
         this.cantidadPrestamosActuales = await this.almacenService.contarPrestamosActivos(id);
       }
     } else if (this.prestamo.tipoReceptor === 'trabajador') {
-      // 🚀 Búsqueda flexible en empleados: si se hace desde la vista de trabajador, lo aceptamos
       const trab = this.listaEmpleados.find(e => String(e.num_empleado).trim() === String(id));
       if (trab && tieneCorreoValido(trab)) {
         this.receptorEncontrado = trab;
@@ -261,7 +260,6 @@ export class NuevoPrestamoPage implements OnInit {
       ? this.prestamo.profesorAutoriza 
       : this.receptorEncontrado;
 
-    // 🚀 FORZAMOS EL TIPO SEGÚN LA VISTA ACTIVA DEL SEGMENTO
     let tipoReceptorTexto = 'Alumno';
     let infoExtra = '';
     let deptoTrabajador = '';
@@ -273,7 +271,7 @@ export class NuevoPrestamoPage implements OnInit {
       tipoReceptorTexto = 'Profesor';
       infoExtra = 'Personal Docente';
     } else if (this.prestamo.tipoReceptor === 'trabajador') {
-      tipoReceptorTexto = 'Trabajador'; // 👈 Forzado garantizado por estar en la pestaña Trabajador
+      tipoReceptorTexto = 'Trabajador'; 
       infoExtra = 'Personal Operativo';
       deptoTrabajador = this.receptorEncontrado.departamento || 'GENERAL';
     }
@@ -285,7 +283,7 @@ export class NuevoPrestamoPage implements OnInit {
         receptor: {
           id: this.prestamo.identificador,
           nombre: this.prestamo.nombreReceptor,
-          tipo: tipoReceptorTexto, // 👈 Envía explícitamente 'Trabajador'
+          tipo: tipoReceptorTexto, 
           correo: this.receptorEncontrado.correo || 'sin_correo@gmail.com',
           telefono: this.receptorEncontrado.telefono || 'Sin registro',
           info_extra: infoExtra,
@@ -296,7 +294,11 @@ export class NuevoPrestamoPage implements OnInit {
           nombre: autorizador?.nombre || 'Auto-autorizado',
           departamento: autorizador?.departamento || 'N/A'
         },
-        herramienta: h,
+        herramienta: {
+          ...h,
+          es_kit: h.es_kit || false,
+          componentes_vinculados: h.componentes_vinculados || []
+        },
         materia: this.prestamo.materia,
         fechaEntrega: this.prestamo.fechaEntrega,
         empleadoAlmacen: this.empleadoActual

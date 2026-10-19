@@ -9,7 +9,7 @@ import {
   IonSegment, IonSegmentButton, IonLabel, IonSearchbar, IonContent, 
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, 
   IonInput, IonChip, IonIcon, IonButton, IonNote, IonList, 
-  IonBadge, IonSelect, IonSelectOption, ToastController, AlertController,
+  IonBadge, IonSelect, IonSelectOption, IonToggle, ToastController, AlertController,
   LoadingController
 } from '@ionic/angular/standalone';
 
@@ -20,7 +20,7 @@ import {
   closeCircle, qrCodeOutline, barcodeOutline, informationCircleOutline, 
   helpCircleOutline, lockClosedOutline, peopleCircleOutline, hammer, 
   checkmarkCircleOutline, checkmarkCircle, closeCircleOutline,
-  gridOutline
+  gridOutline, addOutline
 } from 'ionicons/icons';
 
 import { AlmacenService } from '../../services/almacen.service';
@@ -36,7 +36,7 @@ import { AlmacenService } from '../../services/almacen.service';
     IonSegment, IonSegmentButton, IonLabel, IonSearchbar, IonContent, 
     IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, 
     IonInput, IonChip, IonIcon, IonButton, IonNote, IonList, 
-    IonBadge, IonSelect, IonSelectOption
+    IonBadge, IonSelect, IonSelectOption, IonToggle
   ]
 })
 export class AdministracionPage implements OnInit {
@@ -70,6 +70,7 @@ export class AdministracionPage implements OnInit {
   // 🚀 Variables de Empleado/Trabajador
   empleadoNuevo = { numEmpleado: '', nombre: '', password: '', rol: 'Trabajador', departamento: '', correo: '', telefono: '' };
   
+  // 🚀 Objeto de Herramienta / Kit Actualizado
   herramientaNueva = { 
     codigo: '', 
     nombre: '', 
@@ -77,7 +78,9 @@ export class AdministracionPage implements OnInit {
     cantidad: 1, 
     estado: 'Disponible',
     resguardadoPor: 'Almacén',
-    prestadoA: ''
+    prestadoA: '',
+    es_kit: false,
+    componentes_vinculados: [] as Array<{ nombre: string; cantidad: number }>
   };
 
   maestroNuevo = { numMaestro: '', nombre: '', correo: '', materias: [] as string[], departamento: '', telefono: '' };
@@ -96,7 +99,7 @@ export class AdministracionPage implements OnInit {
       closeCircle, qrCodeOutline, barcodeOutline, informationCircleOutline, 
       helpCircleOutline, lockClosedOutline, peopleCircleOutline, 
       hammer, checkmarkCircleOutline, checkmarkCircle, closeCircleOutline,
-      gridOutline
+      gridOutline, addOutline
     });
   }
 
@@ -154,6 +157,15 @@ export class AdministracionPage implements OnInit {
     } catch (error) {
       console.error("Error al cargar los datos en la administración:", error);
     }
+  }
+
+  // 🚀 GESTIÓN DE COMPONENTES / ACCESORIOS PARA KITS
+  agregarComponenteForm() {
+    this.herramientaNueva.componentes_vinculados.push({ nombre: '', cantidad: 1 });
+  }
+
+  eliminarComponenteForm(index: number) {
+    this.herramientaNueva.componentes_vinculados.splice(index, 1);
   }
 
   async alSeleccionarArchivoExcel(event: any) {
@@ -351,6 +363,16 @@ export class AdministracionPage implements OnInit {
     return limpio.charAt(0).toUpperCase() + limpio.slice(1);
   }
 
+  private formatearNombrePropio(nombre: string): string {
+    if (!nombre) return '';
+    return nombre
+      .trim()
+      .toLowerCase()
+      .split(' ')
+      .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+      .join(' ');
+  }
+
   generarCodigoAutomatico() {
     const nombre = this.herramientaNueva.nombre.trim();
     if (nombre.length < 3) {
@@ -377,17 +399,24 @@ export class AdministracionPage implements OnInit {
     const tipoLimpio = this.formatearTexto(this.herramientaNueva.tipo);
     const resguardoLimpio = this.herramientaNueva.resguardadoPor?.trim() || 'Almacén';
 
+    // Limpiar accesorios vacíos si es kit
+    const componentesValidos = this.herramientaNueva.es_kit 
+      ? this.herramientaNueva.componentes_vinculados.filter(c => c.nombre && c.nombre.trim() !== '') 
+      : [];
+
     if (this.editandoHerramienta) {
       const res = await this.almacenService.registrarHerramienta({
         codigo: this.herramientaNueva.codigo,
         nombre: nombreLimpio,
         tipo: tipoLimpio,
         estado: this.herramientaNueva.estado,
-        resguardadoPor: resguardoLimpio
+        resguardadoPor: resguardoLimpio,
+        es_kit: this.herramientaNueva.es_kit,
+        componentes_vinculados: componentesValidos
       });
 
       if (res.exito) {
-        this.mostrarMensaje('Herramienta actualizada con éxito', 'success');
+        this.mostrarMensaje('Herramienta / Kit actualizado con éxito', 'success');
       } else {
         this.mostrarMensaje('Error al actualizar', 'danger');
       }
@@ -404,7 +433,9 @@ export class AdministracionPage implements OnInit {
           nombre: nombreLimpio,                             
           tipo: tipoLimpio,
           estado: this.herramientaNueva.estado,
-          resguardadoPor: resguardoLimpio
+          resguardadoPor: resguardoLimpio,
+          es_kit: this.herramientaNueva.es_kit,
+          componentes_vinculados: componentesValidos
         };
 
         const res = await this.almacenService.registrarHerramienta(dataParaFirebase);
@@ -416,7 +447,9 @@ export class AdministracionPage implements OnInit {
             num_herramienta: dataParaFirebase.codigo,
             tipo_herramienta: dataParaFirebase.tipo,
             estado: dataParaFirebase.estado,
-            resguardadoPor: dataParaFirebase.resguardadoPor
+            resguardadoPor: dataParaFirebase.resguardadoPor,
+            es_kit: dataParaFirebase.es_kit,
+            componentes_vinculados: dataParaFirebase.componentes_vinculados
           });
         }
       }
@@ -436,7 +469,9 @@ export class AdministracionPage implements OnInit {
       estado: h.estado || 'Disponible',
       resguardadoPor: h.resguardadoPor || 'Almacén',
       prestadoA: h.prestadoA || '',
-      cantidad: 1 
+      cantidad: 1,
+      es_kit: h.es_kit || false,
+      componentes_vinculados: h.componentes_vinculados ? [...h.componentes_vinculados] : []
     } as any;
     this.editandoHerramienta = true;
     window.scrollTo(0, 0);
@@ -459,7 +494,9 @@ export class AdministracionPage implements OnInit {
       cantidad: 1, 
       estado: 'Disponible',
       resguardadoPor: 'Almacén',
-      prestadoA: ''
+      prestadoA: '',
+      es_kit: false,
+      componentes_vinculados: []
     } as any;
 
     this.editandoHerramienta = false;
@@ -475,7 +512,9 @@ export class AdministracionPage implements OnInit {
       nombre: this.herramientaNueva.nombre,
       tipo: this.herramientaNueva.tipo,
       estado: nuevoEstado,
-      resguardadoPor: this.herramientaNueva.resguardadoPor
+      resguardadoPor: this.herramientaNueva.resguardadoPor,
+      es_kit: this.herramientaNueva.es_kit,
+      componentes_vinculados: this.herramientaNueva.componentes_vinculados
     };
 
     const res = await this.almacenService.registrarHerramienta(dataActualizada);
@@ -496,7 +535,9 @@ export class AdministracionPage implements OnInit {
       nombre: h.nombre_herramienta,
       tipo: h.tipo_herramienta || '',
       estado: nuevoEstado,
-      resguardadoPor: h.resguardadoPor || 'Almacén'
+      resguardadoPor: h.resguardadoPor || 'Almacén',
+      es_kit: h.es_kit || false,
+      componentes_vinculados: h.componentes_vinculados || []
     };
 
     try {
@@ -559,7 +600,7 @@ export class AdministracionPage implements OnInit {
       const inicioXTexto = imgLogo ? (margenIzquierdo + tamanoLogo + 20) : margenIzquierdo;
       ctx.textAlign = 'left';
 
-      const textoDepto = `Depto: Suelos`;
+      const textoDepto = `Depto: Forestal`;
       const textoHerramienta = tipo ? `${nombre} (${tipo})` : `${nombre}`;
       const textoID = `ID: ${codigo}`;
 
@@ -640,7 +681,7 @@ export class AdministracionPage implements OnInit {
 
       ctx.drawImage(imgQR, 30, 20, 300, 300);
 
-      const textoDepto = `Depto: Suelos`;
+      const textoDepto = `Depto: Forestal`;
       const textoHerramienta = tipo ? `${nombre} (${tipo})` : `${nombre}`;
       const textoID = `ID: ${codigo}`;
 
@@ -704,7 +745,6 @@ export class AdministracionPage implements OnInit {
     if (!this.editandoAlumno) {
       const matriculaLimpia = matricula.trim();
       const existe = this.alumnos.find(a => a.matricula.trim() === matriculaLimpia);
-      
       if (existe) {
         this.mostrarMensaje(`Error: El alumno con matrícula ${matriculaLimpia} ya existe.`, 'danger');
         return;
@@ -715,7 +755,6 @@ export class AdministracionPage implements OnInit {
     this.alumnoNuevo.carrera = this.formatearNombrePropio(carrera);
 
     const res = await this.almacenService.registrarAlumno(this.alumnoNuevo);
-    
     if (res.exito) {
       this.mostrarMensaje(this.editandoAlumno ? 'Alumno actualizado' : 'Alumno registrado', 'success');
       this.cancelarEdicionAlumno();
@@ -784,7 +823,6 @@ export class AdministracionPage implements OnInit {
     }
     
     const res = await this.almacenService.registrarMaestro(this.maestroNuevo);
-    
     if (res.exito) {
       this.mostrarMensaje(this.editandoMaestro ? 'Maestro actualizado' : 'Maestro registrado', 'success');
       this.cancelarEdicionMaestro();
@@ -857,7 +895,6 @@ export class AdministracionPage implements OnInit {
     this.empleadoNuevo.nombre = this.formatearNombrePropio(this.empleadoNuevo.nombre);
 
     const res = await this.almacenService.registrarEmpleado(this.empleadoNuevo);
-    
     if (res.exito) {
       this.mostrarMensaje(this.editandoEmpleado ? 'Usuario actualizado' : 'Usuario registrado', 'success');
       this.cancelarEdicionEmpleado();
@@ -921,17 +958,15 @@ export class AdministracionPage implements OnInit {
           cssClass: 'boton-alerta-eliminar',
           handler: async () => {
             const res = await this.almacenService.eliminarRegistro(tablaFirebase, idVal);
-            
             if (res.exito) {
               if (this.segmentoActual === 'alumnos') this.alumnos = this.alumnos.filter(a => a.matricula !== idVal);
               else if (this.segmentoActual === 'maestros') this.maestros = this.maestros.filter(m => m.num_maestro !== idVal);
               else if (this.segmentoActual === 'herramientas') this.herramientas = this.herramientas.filter(h => h.num_herramienta !== idVal);
               else if (this.segmentoActual === 'empleados') this.empleados = this.empleados.filter(e => e.num_empleado !== idVal);
 
-              this.mostrarMensaje('Registro eliminado con éxito', 'success');
-              this.cdr.detectChanges(); 
+              this.mostrarMensaje('Registro eliminado correctamente', 'success');
             } else {
-              this.mostrarMensaje('Error: registro vinculado a un préstamo o error de base de datos', 'danger');
+              this.mostrarMensaje('Error al eliminar el registro', 'danger');
             }
           }
         }
@@ -940,23 +975,13 @@ export class AdministracionPage implements OnInit {
     await alert.present();
   }
 
-  async mostrarMensaje(m: string, c: string) {
-    const t = await this.toastController.create({ 
-      message: m, 
-      duration: 2000, 
-      color: c, 
-      position: 'bottom' 
+  async mostrarMensaje(texto: string, color: 'success' | 'warning' | 'danger') {
+    const toast = await this.toastController.create({
+      message: texto,
+      duration: 3000,
+      color: color,
+      position: 'bottom'
     });
-    t.present();
-  }
-
-  formatearNombrePropio(texto: string): string {
-    if (!texto) return '';
-    return texto
-      .trim()
-      .toLowerCase()
-      .split(' ')
-      .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
-      .join(' ');
+    toast.present();
   }
 }

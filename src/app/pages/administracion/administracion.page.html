@@ -193,7 +193,7 @@
               labelPlacement="stacked" 
               [(ngModel)]="maestroNuevo.departamento" 
               (ionInput)="actualizarSugerenciasDepartamento()"
-              placeholder="Ej: Suelos, Botánica...">
+              placeholder="Ej: Forestal, Botánica...">
             </ion-input>
           </ion-item>
 
@@ -274,13 +274,13 @@
       </ion-list>
     </div>
 
-    <!-- SECCIÓN CATÁLOGO DE HERRAMIENTAS -->
+    <!-- SECCIÓN CATÁLOGO DE HERRAMIENTAS Y KITS -->
     <div *ngIf="segmentoActual === 'herramientas'">
       <ion-card class="tarjeta-formulario">
         <ion-card-header>
           <ion-card-title class="titulo-seccion">
             <ion-icon [name]="editandoHerramienta ? 'information-circle-outline' : 'build-outline'"></ion-icon> 
-            {{ editandoHerramienta ? 'Información de la Herramienta' : 'Nueva Herramienta' }}
+            {{ editandoHerramienta ? 'Información de la Herramienta / Kit' : 'Nueva Herramienta / Kit' }}
           </ion-card-title>
         </ion-card-header>
 
@@ -307,7 +307,29 @@
               </ion-item>
             </ion-list>
 
-            <!-- 🚀 CAMPO DE UBICACIÓN / RESGUARDO CON SUGERENCIAS EN EDICIÓN -->
+            <!-- 🚀 TOGGLE Y COMPONENTES EN MODO EDICIÓN -->
+            <ion-item lines="full" class="ion-margin-top" style="background: #f1f5f9; border-radius: 8px;">
+              <ion-label><strong>¿Es un Kit con accesorios?</strong></ion-label>
+              <ion-toggle [(ngModel)]="herramientaNueva.es_kit"></ion-toggle>
+            </ion-item>
+
+            <div *ngIf="herramientaNueva.es_kit" class="ion-padding-start ion-margin-top" style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+              <p style="font-size: 0.85rem; font-weight: bold; color: #334155; margin-bottom: 8px;">📦 Accesorios vinculados:</p>
+              
+              <div *ngFor="let comp of herramientaNueva.componentes_vinculados; let i = index" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                <ion-input placeholder="Nombre (ej. Batería 20V)" [(ngModel)]="comp.nombre" style="background: #ffffff; border-radius: 6px; padding-left: 8px; border: 1px solid #cbd5e1;"></ion-input>
+                <ion-input type="number" min="1" placeholder="Cant." [(ngModel)]="comp.cantidad" style="max-width: 80px; background: #ffffff; border-radius: 6px; text-align: center; border: 1px solid #cbd5e1;"></ion-input>
+                <ion-button color="danger" fill="clear" (click)="eliminarComponenteForm(i)">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+
+              <ion-button size="small" fill="outline" color="dark" (click)="agregarComponenteForm()">
+                <ion-icon name="add-outline" slot="start"></ion-icon> Agregar accesorio
+              </ion-button>
+            </div>
+
+            <!-- CAMPO DE UBICACIÓN / RESGUARDO CON SUGERENCIAS EN EDICIÓN -->
             <ion-item class="input-limpio ion-margin-top" lines="none" style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
               <ion-input 
                 label="Ubicación / Resguardado por" 
@@ -340,11 +362,11 @@
           <div *ngIf="!editandoHerramienta">
             <ion-item class="input-limpio" lines="none">
               <ion-input 
-                label="Nombre de la Herramienta" 
+                label="Nombre de la Herramienta / Kit" 
                 labelPlacement="stacked" 
                 [(ngModel)]="herramientaNueva.nombre" 
                 (ionInput)="actualizarSugerenciasNombre(); generarCodigoAutomatico(); actualizarSugerenciasTipo()"
-                placeholder="Ej: Pala">
+                placeholder="Ej: Taladro Inalámbrico o Kit de Muestreo">
               </ion-input>
             </ion-item>
 
@@ -356,14 +378,36 @@
               </ion-chip>
             </div>
 
-            <ion-item class="input-limpio" lines="none">
+            <!-- 🚀 TOGGLE Y LISTA DE COMPONENTES AL CREAR UN KIT -->
+            <ion-item lines="full" class="ion-margin-top" style="background: #f1f5f9; border-radius: 8px;">
+              <ion-label><strong>¿Es un Kit con accesorios vinculados?</strong></ion-label>
+              <ion-toggle [(ngModel)]="herramientaNueva.es_kit"></ion-toggle>
+            </ion-item>
+
+            <div *ngIf="herramientaNueva.es_kit" class="ion-padding-start ion-margin-top" style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+              <p style="font-size: 0.85rem; font-weight: bold; color: #334155; margin-bottom: 8px;">📦 Agregar accesorios incluidos:</p>
+              
+              <div *ngFor="let comp of herramientaNueva.componentes_vinculados; let i = index" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                <ion-input placeholder="Nombre (ej. Batería 20V, Puntas)" [(ngModel)]="comp.nombre" style="background: #ffffff; border-radius: 6px; padding-left: 8px; border: 1px solid #cbd5e1;"></ion-input>
+                <ion-input type="number" min="1" placeholder="Cant." [(ngModel)]="comp.cantidad" style="max-width: 80px; background: #ffffff; border-radius: 6px; text-align: center; border: 1px solid #cbd5e1;"></ion-input>
+                <ion-button color="danger" fill="clear" (click)="eliminarComponenteForm(i)">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+
+              <ion-button size="small" fill="outline" color="dark" (click)="agregarComponenteForm()">
+                <ion-icon name="add-outline" slot="start"></ion-icon> Agregar accesorio
+              </ion-button>
+            </div>
+
+            <ion-item class="input-limpio ion-margin-top" lines="none">
               <ion-input 
                 label="Cantidad a registrar" 
                 labelPlacement="stacked" 
                 type="number"
                 min="1"
                 [(ngModel)]="herramientaNueva.cantidad" 
-                placeholder="¿Cuántas piezas?">
+                placeholder="¿Cuántas piezas / kits?">
               </ion-input>
             </ion-item>
 
@@ -386,11 +430,19 @@
                 labelPlacement="stacked" 
                 [(ngModel)]="herramientaNueva.tipo" 
                 (ionInput)="actualizarSugerenciasTipo()"
-                placeholder="Ej: De punta, Plantadora...">
+                placeholder="Ej: Eléctrica, Manual, Muestreo...">
               </ion-input>
             </ion-item>
 
-            <!-- 🚀 CAMPO DE UBICACIÓN / RESGUARDO CON SUGERENCIAS AL CREAR -->
+            <div class="ion-padding-start ion-padding-bottom" *ngIf="tiposFiltrados && tiposFiltrados.length > 0">
+              <p style="font-size: 0.8rem; color: var(--ion-color-medium); margin-bottom: 5px;">Tipos registrados:</p>
+              <ion-chip *ngFor="let tipo of tiposFiltrados" (click)="seleccionarSugerenciaTipo(tipo)" color="primary" outline="true">
+                <ion-label>{{ tipo }}</ion-label>
+                <ion-icon name="add-circle-outline"></ion-icon>
+              </ion-chip>
+            </div>
+
+            <!-- CAMPO DE UBICACIÓN / RESGUARDO CON SUGERENCIAS AL CREAR -->
             <ion-item class="input-limpio" lines="none">
               <ion-input 
                 label="Ubicación / Resguardado por" 
@@ -409,14 +461,6 @@
               </ion-chip>
             </div>
 
-            <div class="ion-padding-start ion-padding-bottom" *ngIf="tiposFiltrados && tiposFiltrados.length > 0">
-              <p style="font-size: 0.8rem; color: var(--ion-color-medium); margin-bottom: 5px;">Tipos registrados:</p>
-              <ion-chip *ngFor="let tipo of tiposFiltrados" (click)="seleccionarSugerenciaTipo(tipo)" color="primary" outline="true">
-                <ion-label>{{ tipo }}</ion-label>
-                <ion-icon name="add-circle-outline"></ion-icon>
-              </ion-chip>
-            </div>
-
             <ion-button expand="block" class="boton-guardar ion-margin-top" (click)="guardarHerramienta()">
               <ion-icon name="save-outline" slot="start"></ion-icon> 
               Guardar Registros
@@ -429,17 +473,28 @@
       <ion-list class="lista-gestion">
         <ion-item *ngFor="let h of listaFiltrada" lines="none" class="item-gestion">
           <ion-label>
-            <h3>{{ h.nombre_herramienta }}</h3>
+            <h3>
+              {{ h.nombre_herramienta }} 
+              <span *ngIf="h.es_kit" style="background: #3b82f6; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 6px;">📦 KIT</span>
+            </h3>
             <p>{{ h.tipo_herramienta || 'Sin tipo' }} | {{ h.num_herramienta }}</p>
             
-            <!-- 🚀 ETIQUETA VISIBLE DE DÓNDE ESTÁ LA HERRAMIENTA -->
             <p style="margin-top: 5px; font-size: 0.8rem;">
               📍 <strong>Ubicación:</strong> 
               <span [style.color]="h.resguardadoPor && h.resguardadoPor !== 'Almacén' ? 'var(--ion-color-primary)' : 'inherit'">
                 {{ h.resguardadoPor || 'Almacén' }}
               </span>
             </p>
+
+            <!-- Previsualización de componentes si es kit -->
+            <div *ngIf="h.es_kit && h.componentes_vinculados?.length > 0" style="margin-top: 4px; font-size: 0.75rem; color: #64748b;">
+              <strong>Incluye:</strong> 
+              <span *ngFor="let c of h.componentes_vinculados; let esUltimo = last">
+                {{ c.cantidad }}x {{ c.nombre }}{{ esUltimo ? '' : ', ' }}
+              </span>
+            </div>
           </ion-label>
+
           <ion-buttons slot="end">
             <ion-button (click)="descargarBarraDirecto(h)" color="primary">
               <ion-icon name="barcode-outline"></ion-icon>
@@ -481,16 +536,14 @@
             <ion-input [label]="editandoEmpleado ? 'Nueva Contraseña (opcional)' : 'Contraseña'" type="password" labelPlacement="stacked" [(ngModel)]="empleadoNuevo.password" placeholder="Mín. 6 caracteres"></ion-input>
           </ion-item>
 
-          <!-- 🚀 SELECTOR DE ROL CONDICIONAL -->
+          <!-- SELECTOR DE ROL CONDICIONAL -->
           <ion-item class="input-limpio" lines="none">
-            <!-- Si es D.Forestal, ve el selector completo con Staff, Admin y Trabajador -->
             <ion-select *ngIf="esDForestal" label="Rol" interface="popover" labelPlacement="stacked" [(ngModel)]="empleadoNuevo.rol">
               <ion-select-option value="Staff">Staff</ion-select-option>
               <ion-select-option value="Admin">Admin</ion-select-option>
               <ion-select-option value="Trabajador">Trabajador</ion-select-option>
             </ion-select>
 
-            <!-- Si es un Admin normal, solo se le fija y muestra el rol de Trabajador -->
             <ion-input *ngIf="!esDForestal" label="Rol Asignado" labelPlacement="stacked" [readonly]="true" [(ngModel)]="empleadoNuevo.rol"></ion-input>
           </ion-item>
 
