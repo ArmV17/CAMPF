@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { IonContent, IonButton, IonIcon } from '@ionic/angular/standalone';
+import { Network } from '@capacitor/network';
 import { addIcons } from 'ionicons';
 import { cloudOfflineOutline, refreshOutline } from 'ionicons/icons';
 
@@ -9,19 +11,24 @@ import { cloudOfflineOutline, refreshOutline } from 'ionicons/icons';
   templateUrl: './offline.page.html',
   styleUrls: ['./offline.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule]
+  imports: [CommonModule, IonContent, IonButton, IonIcon]
 })
 export class OfflinePage {
-  cargando: boolean = false;
 
-  constructor() {
+  constructor(private router: Router) {
     addIcons({ cloudOfflineOutline, refreshOutline });
   }
 
-  reintentarConexion() {
-    this.cargando = true;
-    setTimeout(() => {
-      window.location.reload(); // Recarga la app para comprobar si regresó el internet
-    }, 1000);
+  async reintentarConexion() {
+    const status = await Network.getStatus();
+    
+    if (status.connected) {
+      console.log('Conexión recuperada. Redirigiendo...');
+      // Redirige al dashboard o login según consideres
+      this.router.navigate(['/dashboard'], { replaceUrl: true });
+    } else {
+      // Opcional: podrías mostrar un toast sutil indicando que aún sigue sin internet
+      console.warn('Aún sin conexión a la red.');
+    }
   }
 }

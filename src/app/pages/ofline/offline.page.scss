@@ -1,73 +1,98 @@
-.fondo-claro {
-  --background: #f8fafc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+:host {
+  --primary-accent: #2563eb;
+  --bg-app: #f4f6f9;
+  --surface-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --spring-physics: cubic-bezier(0.175, 0.885, 0.32, 1.15);
 }
 
-.contenedor-error {
-  max-width: 380px;
-  margin: 80px auto;
-  padding: 24px;
+.fondo-claro {
+  --background: var(--bg-app);
+}
+
+.contenedor-centrado {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  height: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.tarjeta-error-moderna {
+  background: var(--surface-card);
+  width: 100%;
+  padding: 32px 24px;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.03);
   text-align: center;
 }
 
-.icono-circulo-error {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
+.contenedor-icono-error {
+  width: 72px;
+  height: 72px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  
+  margin: 0 auto 20px auto;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.12);
+
   ion-icon {
-    font-size: 45px;
+    font-size: 36px;
+    color: #ef4444;
   }
-
-  &.offline {
-    background: #e0f2fe;
-    color: #0284c7;
-  }
-
-  &.notfound {
-    background: #fee2e2;
-    color: #dc2626;
-  }
-}
-
-.codigo-404 {
-  font-size: 3rem;
-  font-weight: 800;
-  color: #cbd5e1;
-  line-height: 1;
-  margin-bottom: 5px;
 }
 
 .titulo-error {
   font-size: 1.35rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 10px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 10px 0;
+  letter-spacing: -0.4px;
 }
 
 .descripcion-error {
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--text-muted);
   line-height: 1.5;
-  margin-bottom: 25px;
+  margin: 0 0 24px 0;
 }
 
-.boton-accion {
-  --background: #0f172a;
-  --background-hover: #1e293b;
+.boton-reintentar {
+  --background: var(--text-main);
+  --color: #ffffff;
   --border-radius: 12px;
-  font-weight: 600;
-  text-transform: none;
   height: 48px;
-  width: 100%;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: none;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    --background: var(--primary-accent);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
+
+/* Animación sutil de entrada */
+.animated {
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fadeIn { animation-name: fadeIn; animation-timing-function: var(--spring-physics); }

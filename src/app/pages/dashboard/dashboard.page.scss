@@ -464,3 +464,96 @@
 
   .mensaje-vacio { margin-top: 40px; ion-icon { font-size: 60px; } }
 }
+
+/* ==========================================================================
+   ESTILOS ESTRUCTURADOS Y TÉCNICOS PARA EL POPOVER DE EXPORTACIÓN
+   ========================================================================== */
+ion-popover.popover-exportar-elegante {
+  --background: #ffffff;
+  --box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15);
+  --width: 220px;
+  --border-radius: 6px; /* Bordes rectos y limpios */
+
+  &::part(content) {
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    overflow: hidden;
+  }
+}
+
+.content-popover {
+  --background: #ffffff;
+  background: #ffffff;
+}
+
+.popover-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #0f172a; /* Fondo oscuro alineado al Navbar */
+
+  .popover-titulo {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+}
+
+.popover-lista {
+  background: transparent !important;
+  padding: 4px !important;
+}
+
+.categoria-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  padding: 8px 10px 4px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.item-popover {
+  --background: transparent;
+  --background-hover: #f1f5f9;
+  --background-activated: #e2e8f0;
+  --border-radius: 4px; /* Bordes rectos dentro de la lista */
+  --min-height: 38px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  margin-bottom: 2px;
+  transition: background-color 0.15s ease;
+
+  ion-icon {
+    font-size: 1.15rem;
+    margin-right: 10px;
+    color: #475569;
+  }
+
+  ion-label {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #1e293b;
+  }
+
+  /* Estado hover sobrio e industrial */
+  &:hover {
+    --background: #f1f5f9;
+    
+    ion-icon {
+      color: #2563eb;
+    }
+
+    ion-label {
+      color: #0f172a;
+    }
+  }
+
+  &.pdf-vencidos, &.excel-vencidos {
+    &:hover ion-icon {
+      color: #dc2626;
+    }
+  }
+}
