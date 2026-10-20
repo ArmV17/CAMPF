@@ -2,7 +2,7 @@
   <div class="contenedor-centrado animated fadeIn">
     <div class="tarjeta-error-moderna">
       
-      <!-- Icono superior con efecto glow -->
+      <!-- Icono superior con estilo -->
       <div class="contenedor-icono-error">
         <ion-icon name="cloud-offline-outline"></ion-icon>
       </div>
@@ -10,13 +10,18 @@
       <!-- Textos informativos -->
       <h1 class="titulo-error">Sin Conexión a Internet</h1>
       <p class="descripcion-error">
-        Parece que has perdido la conexión de red. Por favor, verifica tu Wi-Fi o datos móviles para continuar operando la Aplicación.
+        Parece que se ha interrumpido la red. Verifica tu Wi-Fi o datos móviles para continuar operando la Aplicación.
       </p>
 
-      <!-- Botón de reintento estilizado -->
-      <ion-button expand="block" class="boton-reintentar" (click)="reintentarConexion()">
-        <ion-icon name="refresh-outline" slot="start"></ion-icon>
-        Volver a Intentar
+      <!-- Botón dinámico con estado de carga -->
+      <ion-button 
+        expand="block" 
+        class="boton-reintentar" 
+        [disabled]="estaComprobando"
+        (click)="reintentarConexion()">
+        <ion-icon name="refresh-outline" slot="start" *ngIf="!estaComprobando"></ion-icon>
+        <ion-spinner name="crescent" slot="start" *ngIf="estaComprobando"></ion-spinner>
+        {{ estaComprobando ? 'Comprobando red...' : 'Volver a Intentar' }}
       </ion-button>
 
     </div>
